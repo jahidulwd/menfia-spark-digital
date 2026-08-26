@@ -21,18 +21,32 @@ export const Route = createFileRoute("/work/$id")({
       ],
     };
   },
-  loader: ({ params }): { project: Project } => {
-    const project = getProjectBySlug(params.id);
-    if (!project) {
-      throw notFound();
-    }
-    return { project };
-  },
+  notFoundComponent: ProjectNotFound,
   component: ProjectDetail,
 });
 
+function ProjectNotFound() {
+  return (
+    <main className="min-h-screen bg-titan">
+      <div className="mx-auto max-w-7xl px-6 py-24 text-center lg:px-10">
+        <h1 className="text-4xl font-extrabold tracking-tight text-carbon">Project not found</h1>
+        <p className="mt-4 text-ink/60">That project doesn&apos;t exist in our build index.</p>
+        <Link
+          to="/"
+          hash="work"
+          className="mt-8 inline-block rounded-full bg-carbon px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-volt transition hover:opacity-90"
+        >
+          Back to work
+        </Link>
+      </div>
+    </main>
+  );
+}
+
 function ProjectDetail() {
-  const { project } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const project = getProjectBySlug(id);
+  if (!project) throw notFound();
 
   return (
     <main className="min-h-screen bg-titan">
