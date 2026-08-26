@@ -21,7 +21,7 @@ export const Route = createFileRoute("/work/$id")({
       ],
     };
   },
-  loader: ({ params }) => {
+  loader: ({ params }): { project: Project } => {
     const project = getProjectBySlug(params.id);
     if (!project) {
       throw notFound();
@@ -32,9 +32,7 @@ export const Route = createFileRoute("/work/$id")({
 });
 
 function ProjectDetail() {
-  const data = Route.useLoaderData();
-  if (!data?.project) return null;
-  const { project } = data;
+  const { project } = Route.useLoaderData();
 
   return (
     <main className="min-h-screen bg-titan">
