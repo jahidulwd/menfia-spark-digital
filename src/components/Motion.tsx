@@ -1,5 +1,5 @@
 import { useRef, useEffect, type ReactNode, type ElementType } from "react";
-import { gsap, ScrollTrigger, useGsapContext, splitWords } from "../lib/gsap";
+import { gsap, useGsapContext, splitWords } from "../lib/gsap";
 
 /** Fade + rise on scroll, with optional stagger over direct children. */
 export function Reveal({
@@ -26,7 +26,6 @@ export function Reveal({
       delay,
       ease: "power3.out",
       stagger: stagger ?? 0,
-      scrollTrigger: { trigger: root, start: "top 88%", once: true },
     });
   });
 
@@ -58,7 +57,6 @@ export function SplitHeading({
       delay,
       ease: "power4.out",
       stagger: 0.055,
-      scrollTrigger: { trigger: root, start: "top 90%", once: true },
     });
   });
 
@@ -130,15 +128,14 @@ export function Parallax({
   amount?: number;
 }) {
   const ref = useGsapContext<HTMLDivElement>((_self, root) => {
-    gsap.fromTo(
-      root,
-      { y: amount },
-      {
-        y: -amount,
-        ease: "none",
-        scrollTrigger: { trigger: root, start: "top bottom", end: "bottom top", scrub: true },
-      },
-    );
+    const update = () => {
+      const r = root.getBoundingClientRect();
+      const progress = 1 - (r.top + r.height / 2) / window.innerHeight;
+      gsap.to(root, { y: -progress * amount, duration: 0.4, ease: "power2.out", overwrite: true });
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   });
   return (
     <div ref={ref} className={className}>
@@ -159,7 +156,6 @@ export function CountUp({ value, className }: { value: string; className?: strin
       n: target,
       duration: 1.4,
       ease: "power2.out",
-      scrollTrigger: { trigger: root, start: "top 92%", once: true },
       onUpdate: () => {
         root.textContent = value.replace(match[0], obj.n.toFixed(decimals));
       },
@@ -172,4 +168,4 @@ export function CountUp({ value, className }: { value: string; className?: strin
   );
 }
 
-export { gsap, ScrollTrigger };
+export { gsap };
