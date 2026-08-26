@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import workSaas from "../assets/work-saas.jpg";
-import workCommerce from "../assets/work-commerce.jpg";
-import workMarketing from "../assets/work-marketing.jpg";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { services, projects } from "../lib/projects";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,100 +23,9 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const services = [
-  {
-    id: "01",
-    label: "Web Dev",
-    title: "Web Development",
-    description:
-      "Custom sites and web apps engineered on clean, maintainable stacks — from marketing pages to full SaaS dashboards.",
-    tags: ["Next", "Node", "a11y"],
-  },
-  {
-    id: "02",
-    label: "Templates",
-    title: "Templates",
-    description:
-      "Production-ready, design-system driven templates that ship pixel-perfect and stay easy to extend.",
-    tags: ["React", "Tailwind", "Figma"],
-  },
-  {
-    id: "03",
-    label: "Plugins",
-    title: "Plugins & Scripts",
-    description:
-      "Bespoke plugins, scripts, and integrations that plug into your stack and automate the busywork.",
-    tags: ["WP", "Shopify", "API"],
-    featured: true,
-  },
-  {
-    id: "04",
-    label: "Marketing",
-    title: "Digital Marketing",
-    description:
-      "SEO, paid, and content systems that turn traffic into pipeline — measured, reported, and compounding.",
-    tags: ["SEO", "Paid", "CRO"],
-  },
-];
-
-const projects = [
-  {
-    image: workSaas,
-    title: "Northwind SaaS Console",
-    category: "Web",
-    description: "Analytics platform, 0→1",
-  },
-  {
-    image: workCommerce,
-    title: "Kestrel Commerce Kit",
-    category: "Template",
-    description: "Headless storefront system",
-  },
-  {
-    image: workMarketing,
-    title: "Vantage Growth Engine",
-    category: "Marketing",
-    description: "Paid + SEO, 3.2x ROAS",
-  },
-];
-
 function Index() {
   return (
     <div className="min-h-screen bg-titan font-sans text-ink antialiased">
-      {/* NAV */}
-      <header className="sticky top-0 z-50 border-b border-steel bg-titan/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-          <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-md bg-carbon font-mono text-sm font-semibold text-volt">
-              M
-            </div>
-            <div className="leading-tight">
-              <p className="text-sm font-extrabold tracking-tight">MENFIA DIGITAL</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">
-                Systems / 04
-              </p>
-            </div>
-          </div>
-          <nav className="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/60 md:flex">
-            <a href="#work" className="hover:text-carbon">
-              Work
-            </a>
-            <a href="#services" className="hover:text-carbon">
-              Services
-            </a>
-            <a href="#contact" className="hover:text-carbon">
-              Contact
-            </a>
-          </nav>
-          <a
-            href="#contact"
-            className="rounded-full bg-volt px-5 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-carbon transition hover:brightness-95"
-          >
-            Start a build
-          </a>
-        </div>
-      </header>
-
       {/* HERO */}
       <section className="grid-bg border-b border-steel">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
@@ -144,18 +51,20 @@ function Index() {
                 campaigns — from first grid to final deploy.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href="#work"
+                <Link
+                  to="/"
+                  hash="work"
                   className="rounded-full bg-carbon px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-volt transition hover:opacity-90"
                 >
                   View the work
-                </a>
-                <a
-                  href="#services"
+                </Link>
+                <Link
+                  to="/"
+                  hash="services"
                   className="rounded-full border border-steel bg-white/50 px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-ink/70 transition hover:border-carbon/30"
                 >
                   Browse services
-                </a>
+                </Link>
               </div>
             </div>
             <div className="w-full lg:w-80">
@@ -279,17 +188,22 @@ function Index() {
                 Recent builds
               </h2>
             </div>
-            <a
-              href="#work"
+            <Link
+              to="/"
+              hash="work"
               className="hidden font-mono text-[11px] uppercase tracking-[0.15em] text-ink/50 hover:text-carbon sm:block"
             >
               All projects /
-            </a>
+            </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {projects.map((project) => (
-              <article key={project.title} className="group">
-                <div className="overflow-hidden rounded-xl border border-steel">
+              <article key={project.slug} className="group">
+                <Link
+                  to="/work/$id"
+                  params={{ id: project.slug }}
+                  className="block overflow-hidden rounded-xl border border-steel"
+                >
                   <img
                     src={project.image}
                     alt={project.title}
@@ -298,9 +212,15 @@ function Index() {
                     loading="lazy"
                     className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </div>
+                </Link>
                 <div className="mt-4 flex items-center justify-between">
-                  <h3 className="text-lg font-bold tracking-tight text-carbon">{project.title}</h3>
+                  <Link
+                    to="/work/$id"
+                    params={{ id: project.slug }}
+                    className="text-lg font-bold tracking-tight text-carbon hover:underline"
+                  >
+                    {project.title}
+                  </Link>
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">
                     {project.category}
                   </span>
