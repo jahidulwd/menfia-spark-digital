@@ -197,9 +197,9 @@ function Index() {
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">
                 / selected work
               </p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
                 Recent builds
-              </h2>
+              </SplitHeading>
             </div>
             <Link
               to="/"
@@ -209,7 +209,7 @@ function Index() {
               All projects /
             </Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <Reveal stagger={0.14} className="grid gap-6 md:grid-cols-3">
             {projects.map((project) => (
               <article key={project.slug} className="group">
                 <Link
@@ -241,7 +241,7 @@ function Index() {
                 <p className="mt-1 text-sm text-ink/50">{project.description}</p>
               </article>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -253,15 +253,15 @@ function Index() {
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">
                 / start a build
               </p>
-              <h2 className="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-volt sm:text-5xl">
-                Let&apos;s ship the next system.
-              </h2>
+              <SplitHeading className="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-volt sm:text-5xl">
+                Let's ship the next system.
+              </SplitHeading>
               <p className="mt-5 max-w-md text-base leading-relaxed text-white/60">
                 Tell us what you&apos;re building. We&apos;ll map the stack, the timeline, and the
                 first milestone — no fluff.
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-7">
+            <Tilt3D className="rounded-xl border border-white/10 bg-white/5 p-7">
               <form
                 className="flex flex-col gap-4"
                 onSubmit={(e) => {
@@ -296,7 +296,7 @@ function Index() {
                   Send brief
                 </button>
               </form>
-            </div>
+            </Tilt3D>
           </div>
           <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 font-mono text-[11px] uppercase tracking-[0.15em] text-white/40 sm:flex-row sm:items-center">
             <span>Menfia Digital — Systems for the web</span>
