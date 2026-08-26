@@ -14,6 +14,7 @@ export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
     if (typeof window === "undefined") return;
     if (!registered) {
       gsap.registerPlugin(ScrollTrigger);
+      (window as any).ST = ScrollTrigger;
       registered = true;
     }
     const root = ref.current;
