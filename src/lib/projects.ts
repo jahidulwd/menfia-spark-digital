@@ -2,6 +2,51 @@ import workSaas from "../assets/work-saas.jpg";
 import workCommerce from "../assets/work-commerce.jpg";
 import workMarketing from "../assets/work-marketing.jpg";
 
+export interface Service {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  tags: string[];
+  featured?: boolean;
+}
+
+export const services: Service[] = [
+  {
+    id: "01",
+    label: "Web Dev",
+    title: "Web Development",
+    description:
+      "Custom sites and web apps engineered on clean, maintainable stacks — from marketing pages to full SaaS dashboards.",
+    tags: ["Next", "Node", "a11y"],
+  },
+  {
+    id: "02",
+    label: "Templates",
+    title: "Templates",
+    description:
+      "Production-ready, design-system driven templates that ship pixel-perfect and stay easy to extend.",
+    tags: ["React", "Tailwind", "Figma"],
+  },
+  {
+    id: "03",
+    label: "Plugins",
+    title: "Plugins & Scripts",
+    description:
+      "Bespoke plugins, scripts, and integrations that plug into your stack and automate the busywork.",
+    tags: ["WP", "Shopify", "API"],
+    featured: true,
+  },
+  {
+    id: "04",
+    label: "Marketing",
+    title: "Digital Marketing",
+    description:
+      "SEO, paid, and content systems that turn traffic into pipeline — measured, reported, and compounding.",
+    tags: ["SEO", "Paid", "CRO"],
+  },
+];
+
 export interface Project {
   id: string;
   slug: string;
