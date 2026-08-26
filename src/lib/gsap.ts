@@ -23,7 +23,11 @@ export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
     if (reduce) return;
 
     const ctx = gsap.context((self) => setup(self, root), root);
-    return () => ctx.revert();
+    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => {
+      cancelAnimationFrame(raf);
+      ctx.revert();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
