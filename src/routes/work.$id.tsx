@@ -32,7 +32,9 @@ export const Route = createFileRoute("/work/$id")({
 });
 
 function ProjectDetail() {
-  const { project } = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  if (!data?.project) return null;
+  const { project } = data;
 
   return (
     <main className="min-h-screen bg-titan">
