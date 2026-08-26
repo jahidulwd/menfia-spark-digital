@@ -182,9 +182,10 @@ function Index() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </Link>
             ))}
-          </div>
+          </Reveal>
+
         </div>
       </section>
 
