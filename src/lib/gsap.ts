@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-let registered = false;
-
+/**
+ * Runs a GSAP setup function once the element scrolls into view.
+ * Uses IntersectionObserver instead of the ScrollTrigger plugin so animations
+ * are reliable during SSR hydration.
+ */
 export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
   setup: (self: gsap.Context, root: T) => void,
   deps: unknown[] = [],
@@ -12,18 +14,51 @@ export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!registered) {
-      gsap.registerPlugin(ScrollTrigger);
-      registered = true;
-    }
     const root = ref.current;
     if (!root) return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const ctx = gsap.context((self) => setup(self, root), root);
-    return () => ctx.revert();
+    let ctx: gsap.Context | null = null;
+    let settle: number | undefined;
+    const run = () => {
+      if (ctx) return;
+      ctx = gsap.context((self) => setup(self, root), root);
+      // Guarantee the end state even if rAF is throttled (background tab,
+      // embedded preview iframe) and the tween never gets to finish.
+      settle = window.setTimeout(() => {
+        for (const item of (ctx?.data ?? []) as unknown[]) {
+          const tween = item as { progress?: (v: number) => void; totalProgress?: () => number };
+          if (typeof tween.progress === "function" && typeof tween.totalProgress === "function") {
+            if (tween.totalProgress() < 1) tween.progress(1);
+          }
+        }
+      }, 3000);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            run();
+            observer.disconnect();
+          }
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.01 },
+    );
+    observer.observe(root);
+
+    // Safety net: if the observer never fires (e.g. element already scrolled
+    // past), play the animation anyway so content is never left hidden.
+    const fallback = window.setTimeout(run, 1500);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+      if (settle) window.clearTimeout(settle);
+      ctx?.revert();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
@@ -50,4 +85,4 @@ export function splitWords(el: HTMLElement) {
   return nodes;
 }
 
-export { gsap, ScrollTrigger };
+export { gsap };

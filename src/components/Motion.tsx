@@ -1,5 +1,33 @@
-import { useRef, useEffect, type ReactNode, type ElementType } from "react";
-import { gsap, ScrollTrigger, useGsapContext, splitWords } from "../lib/gsap";
+import { useRef, useEffect, useState, type ReactNode, type ElementType } from "react";
+import { gsap, useGsapContext, splitWords } from "../lib/gsap";
+
+/** Fires once the element scrolls into view (with a safe fallback). */
+function useInView<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.01 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, inView] as const;
+}
 
 /** Fade + rise on scroll, with optional stagger over direct children. */
 export function Reveal({
@@ -17,18 +45,28 @@ export function Reveal({
   stagger?: number;
   as?: ElementType;
 }) {
-  const ref = useGsapContext<HTMLDivElement>((_self, root) => {
-    const targets = stagger ? Array.from(root.children) : [root];
-    gsap.from(targets, {
-      opacity: 0,
-      y,
-      duration: 0.9,
-      delay,
-      ease: "power3.out",
-      stagger: stagger ?? 0,
-      scrollTrigger: { trigger: root, start: "top 88%", once: true },
+  const [ref, inView] = useInView<HTMLDivElement>();
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const targets = (stagger ? Array.from(root.children) : [root]) as HTMLElement[];
+    targets.forEach((el, i) => {
+      el.style.transition = "none";
+      el.style.opacity = inView ? "1" : "0";
+      el.style.transform = inView ? "translateY(0)" : `translateY(${y}px)`;
+      if (!inView) return;
+      // force styles to apply, then transition to the resting state
+      void el.offsetWidth;
+      el.style.opacity = "0";
+      el.style.transform = `translateY(${y}px)`;
+      el.style.transition = `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay + i * (stagger ?? 0)}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay + i * (stagger ?? 0)}s`;
+      requestAnimationFrame(() => {
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+      });
     });
-  });
+  }, [inView, delay, stagger, y, ref]);
 
   return (
     <Tag ref={ref} className={className}>
@@ -49,18 +87,27 @@ export function SplitHeading({
   as?: ElementType;
   delay?: number;
 }) {
-  const ref = useGsapContext<HTMLHeadingElement>((_self, root) => {
+  const [ref, inView] = useInView<HTMLHeadingElement>();
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
     const words = splitWords(root);
-    gsap.from(words, {
-      yPercent: 115,
-      opacity: 0,
-      duration: 0.9,
-      delay,
-      ease: "power4.out",
-      stagger: 0.055,
-      scrollTrigger: { trigger: root, start: "top 90%", once: true },
+    words.forEach((w, i) => {
+      w.style.display = "inline-block";
+      w.style.willChange = "transform, opacity";
+      w.style.transition = "none";
+      w.style.transform = "translateY(115%)";
+      w.style.opacity = "0";
+      if (!inView) return;
+      void w.offsetWidth;
+      w.style.transition = `transform 0.85s cubic-bezier(0.16,1,0.3,1) ${delay + i * 0.055}s, opacity 0.5s ease ${delay + i * 0.055}s`;
+      requestAnimationFrame(() => {
+        w.style.transform = "translateY(0)";
+        w.style.opacity = "1";
+      });
     });
-  });
+  }, [inView, delay, ref]);
 
   return (
     <Tag ref={ref} className={className}>
@@ -130,15 +177,14 @@ export function Parallax({
   amount?: number;
 }) {
   const ref = useGsapContext<HTMLDivElement>((_self, root) => {
-    gsap.fromTo(
-      root,
-      { y: amount },
-      {
-        y: -amount,
-        ease: "none",
-        scrollTrigger: { trigger: root, start: "top bottom", end: "bottom top", scrub: true },
-      },
-    );
+    const update = () => {
+      const r = root.getBoundingClientRect();
+      const progress = 1 - (r.top + r.height / 2) / window.innerHeight;
+      gsap.to(root, { y: -progress * amount, duration: 0.4, ease: "power2.out", overwrite: true });
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   });
   return (
     <div ref={ref} className={className}>
@@ -149,22 +195,35 @@ export function Parallax({
 
 /** Counts a numeric string up when scrolled into view. */
 export function CountUp({ value, className }: { value: string; className?: string }) {
-  const ref = useGsapContext<HTMLSpanElement>((_self, root) => {
+  const [ref, inView] = useInView<HTMLSpanElement>();
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || !inView) return;
     const match = value.match(/[\d.]+/);
     if (!match) return;
     const target = parseFloat(match[0]);
     const decimals = (match[0].split(".")[1] ?? "").length;
-    const obj = { n: 0 };
-    gsap.to(obj, {
-      n: target,
-      duration: 1.4,
-      ease: "power2.out",
-      scrollTrigger: { trigger: root, start: "top 92%", once: true },
-      onUpdate: () => {
-        root.textContent = value.replace(match[0], obj.n.toFixed(decimals));
-      },
-    });
-  });
+    const start = performance.now();
+    const duration = 1400;
+    let frame = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      root.textContent = value.replace(match[0], (target * eased).toFixed(decimals));
+      if (p < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    const settle = window.setTimeout(() => {
+      root.textContent = value;
+    }, duration + 1200);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
+      root.textContent = value;
+    };
+  }, [inView, value, ref]);
+
   return (
     <span ref={ref} className={className}>
       {value}
@@ -172,4 +231,4 @@ export function CountUp({ value, className }: { value: string; className?: strin
   );
 }
 
-export { gsap, ScrollTrigger };
+export { gsap };
