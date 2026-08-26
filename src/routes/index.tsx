@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { services, projects } from "../lib/projects";
+import { projects } from "../lib/projects";
+import { services } from "../lib/services";
+import { Reveal, SplitHeading, Tilt3D, CountUp, Parallax } from "../components/Motion";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,13 +40,12 @@ function Index() {
                 </span>
               </div>
               <h1 className="text-5xl font-extrabold leading-[0.95] tracking-tight text-carbon sm:text-6xl lg:text-7xl">
-                We build digital
-                <br />
-                systems that{" "}
-                <span className="relative whitespace-nowrap">
-                  <span className="relative z-10">scale.</span>
-                  <span className="absolute inset-x-0 bottom-2 h-4 -rotate-1 bg-volt"></span>
-                </span>
+                <SplitHeading as="span" className="block">
+                  We build digital
+                </SplitHeading>
+                <SplitHeading as="span" className="block" delay={0.15}>
+                  systems that scale.
+                </SplitHeading>
               </h1>
               <p className="mt-6 max-w-md text-base leading-relaxed text-ink/60">
                 Menfia Digital designs and engineers web products, templates, plugins, and growth
