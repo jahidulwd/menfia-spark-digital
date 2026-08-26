@@ -47,11 +47,13 @@ function Index() {
                   systems that scale.
                 </SplitHeading>
               </h1>
-              <p className="mt-6 max-w-md text-base leading-relaxed text-ink/60">
-                Menfia Digital designs and engineers web products, templates, plugins, and growth
-                campaigns — from first grid to final deploy.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <Reveal delay={0.3}>
+                <p className="mt-6 max-w-md text-base leading-relaxed text-ink/60">
+                  Menfia Digital designs and engineers web products, templates, plugins, and growth
+                  campaigns — from first grid to final deploy.
+                </p>
+              </Reveal>
+              <Reveal delay={0.4} className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/"
                   hash="work"
@@ -66,9 +68,9 @@ function Index() {
                 >
                   Browse services
                 </Link>
-              </div>
+              </Reveal>
             </div>
-            <div className="w-full lg:w-80">
+            <Tilt3D className="w-full lg:w-80">
               <div className="rounded-xl border border-steel bg-white/70 p-5">
                 <div className="mb-4 flex items-center justify-between">
                   <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">
@@ -82,23 +84,29 @@ function Index() {
                     <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/50">
                       Web dev
                     </dt>
-                    <dd className="text-right text-2xl font-extrabold text-carbon">148</dd>
+                    <dd className="text-right text-2xl font-extrabold text-carbon">
+                      <CountUp value="148" />
+                    </dd>
                   </div>
                   <div className="flex items-start justify-between gap-4">
                     <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/50">
                       Templates
                     </dt>
-                    <dd className="text-right text-2xl font-extrabold text-carbon">62</dd>
+                    <dd className="text-right text-2xl font-extrabold text-carbon">
+                      <CountUp value="62" />
+                    </dd>
                   </div>
                   <div className="flex items-start justify-between gap-4">
                     <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/50">
                       Plugins
                     </dt>
-                    <dd className="text-right text-2xl font-extrabold text-volt">27</dd>
+                    <dd className="text-right text-2xl font-extrabold text-volt">
+                      <CountUp value="27" />
+                    </dd>
                   </div>
                 </dl>
               </div>
-            </div>
+            </Tilt3D>
           </div>
         </div>
       </section>
@@ -111,22 +119,25 @@ function Index() {
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">
                 / what we do
               </p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
                 The service matrix
-              </h2>
+              </SplitHeading>
             </div>
             <span className="hidden font-mono text-[11px] uppercase tracking-[0.15em] text-ink/40 sm:block">
               04 modules
             </span>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <Reveal stagger={0.12} className="grid gap-4 md:grid-cols-2">
             {services.map((service) => (
-              <div
+              <Link
                 key={service.id}
-                className={`group rounded-xl border border-steel p-7 transition hover:border-carbon/30 ${
+                to="/services/$id"
+                params={{ id: service.slug }}
+                className={`group block rounded-xl border border-steel p-7 transition hover:border-carbon/30 ${
                   service.featured ? "bg-carbon hover:opacity-95" : "bg-white/70"
                 }`}
               >
+
                 <span
                   className={`font-mono text-[11px] ${
                     service.featured ? "text-volt/60" : "text-ink/30"
