@@ -22,6 +22,7 @@ export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
+    console.log('[gsap] setup', root.className);
     const ctx = gsap.context((self) => setup(self, root), root);
     const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => {
