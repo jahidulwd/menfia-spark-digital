@@ -115,7 +115,7 @@ export const services: ServiceDetail[] = [
         name: "Product site",
         price: "from $7.5k",
         blurb: "Multi-page marketing system with a real CMS.",
-        items: ["8–15 pages", "Design system", "Blog + SEO架构", "Performance budget"],
+        items: ["8–15 pages", "Design system", "Blog + SEO architecture", "Performance budget"],
         featured: true,
       },
       {
