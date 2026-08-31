@@ -60,6 +60,19 @@ export interface Project {
   challenge: string;
   solution: string;
   results: string[];
+  /* long-form case study */
+  intro: string;
+  scope: string[];
+  timeline: string;
+  role: string;
+  problemNote: string;
+  approach: { title: string; body: string }[];
+  design: { title: string; body: string; bullets: string[] };
+  build: { title: string; body: string; bullets: string[] };
+  metrics: { value: string; label: string }[];
+  testimonial: { quote: string; author: string; role: string };
+  deliverables: string[];
+  outcome: string;
 }
 
 export const projects: Project[] = [
