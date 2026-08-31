@@ -20,20 +20,10 @@ export function useGsapContext<T extends HTMLElement = HTMLDivElement>(
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let ctx: gsap.Context | null = null;
-    let settle: number | undefined;
+    const settle: number | undefined = undefined;
     const run = () => {
       if (ctx) return;
       ctx = gsap.context((self) => setup(self, root), root);
-      // Guarantee the end state even if rAF is throttled (background tab,
-      // embedded preview iframe) and the tween never gets to finish.
-      settle = window.setTimeout(() => {
-        for (const item of (ctx?.data ?? []) as unknown[]) {
-          const tween = item as { progress?: (v: number) => void; totalProgress?: () => number };
-          if (typeof tween.progress === "function" && typeof tween.totalProgress === "function") {
-            if (tween.totalProgress() < 1) tween.progress(1);
-          }
-        }
-      }, 3000);
     };
 
     const observer = new IntersectionObserver(
