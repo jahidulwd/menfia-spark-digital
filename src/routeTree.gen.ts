@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as WorkIdRouteImport } from './routes/work.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -52,6 +53,11 @@ const ApiContactRoute = ApiContactRouteImport.update({
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsSlugRoute = ProductsSlugRouteImport.update({
+  id: '/products/$slug',
+  path: '/products/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIdRoute = ServicesIdRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/contact': typeof ApiContactRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products/': typeof ProductsIndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/contact': typeof ApiContactRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products': typeof ProductsIndexRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/contact': typeof ApiContactRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products/': typeof ProductsIndexRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/api/contact'
+    | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
     | '/products/'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/api/contact'
+    | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
     | '/products'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/api/contact'
+    | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
     | '/products/'
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiContactRoute: typeof ApiContactRoute
+  ProductsSlugRoute: typeof ProductsSlugRoute
   ServicesIdRoute: typeof ServicesIdRoute
   WorkIdRoute: typeof WorkIdRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products/'
       preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products/$slug': {
+      id: '/products/$slug'
+      path: '/products/$slug'
+      fullPath: '/products/$slug'
+      preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/$id': {
@@ -362,6 +382,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiContactRoute: ApiContactRoute,
+  ProductsSlugRoute: ProductsSlugRoute,
   ServicesIdRoute: ServicesIdRoute,
   WorkIdRoute: WorkIdRoute,
   ProductsIndexRoute: ProductsIndexRoute,
