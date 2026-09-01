@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { projects } from "../lib/projects";
 import { services } from "../lib/services";
 import { Reveal, SplitHeading, Tilt3D, CountUp } from "../components/Motion";
+import { ContactForm } from "../components/ContactForm";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -262,40 +263,7 @@ function Index() {
               </p>
             </div>
             <Tilt3D className="rounded-xl border border-white/10 bg-white/5 p-7">
-              <form
-                className="flex flex-col gap-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/40">
-                    Your email
-                  </span>
-                  <input
-                    type="email"
-                    placeholder="you@company.com"
-                    className="mt-2 w-full rounded-lg border border-white/10 bg-carbon px-4 py-3 text-sm text-volt placeholder:text-white/30 focus:border-volt focus:outline-none"
-                  />
-                </label>
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/40">
-                    Project type
-                  </span>
-                  <select className="mt-2 w-full rounded-lg border border-white/10 bg-carbon px-4 py-3 text-sm text-white focus:border-volt focus:outline-none">
-                    <option>Web development</option>
-                    <option>Template / design system</option>
-                    <option>Plugin or script</option>
-                    <option>Digital marketing</option>
-                  </select>
-                </label>
-                <button
-                  type="submit"
-                  className="mt-2 w-full rounded-lg bg-volt px-6 py-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-carbon transition hover:brightness-95"
-                >
-                  Send brief
-                </button>
-              </form>
+              <ContactForm />
             </Tilt3D>
           </div>
           <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 font-mono text-[11px] uppercase tracking-[0.15em] text-white/40 sm:flex-row sm:items-center">
