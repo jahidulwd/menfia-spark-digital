@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { projects } from "../lib/projects";
 import { services } from "../lib/services";
 import { Reveal, SplitHeading, Tilt3D, CountUp } from "../components/Motion";
+import { ContactForm } from "../components/ContactForm";
 
 export const Route = createFileRoute("/")({
   head: () => ({
