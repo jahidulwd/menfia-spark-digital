@@ -3,6 +3,8 @@ import { projects } from "../lib/projects";
 import { services } from "../lib/services";
 import { Reveal, SplitHeading, Tilt3D, CountUp } from "../components/Motion";
 import { ContactForm } from "../components/ContactForm";
+import { FooterLegal } from "../components/FooterLegal";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -266,10 +268,8 @@ function Index() {
               <ContactForm />
             </Tilt3D>
           </div>
-          <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 font-mono text-[11px] uppercase tracking-[0.15em] text-white/40 sm:flex-row sm:items-center">
-            <span>Menfia Digital — Systems for the web</span>
-            <span>© 2026 · Built with intent</span>
-          </div>
+          <FooterLegal />
+
         </div>
       </section>
     </div>
