@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
 import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -51,6 +52,11 @@ const ThankYouRoute = ThankYouRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDownloadsRoute = AuthenticatedDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiContactRoute = ApiContactRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/thank-you': typeof ThankYouRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/api/contact': typeof ApiContactRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/thank-you': typeof ThankYouRoute
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/api/contact': typeof ApiContactRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/thank-you': typeof ThankYouRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
   '/api/contact': typeof ApiContactRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/thank-you'
     | '/admin'
+    | '/downloads'
     | '/api/contact'
     | '/checkout/$slug'
     | '/p/$slug'
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/thank-you'
+    | '/downloads'
     | '/api/contact'
     | '/checkout/$slug'
     | '/p/$slug'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/thank-you'
     | '/_authenticated/admin'
+    | '/_authenticated/downloads'
     | '/api/contact'
     | '/checkout/$slug'
     | '/p/$slug'
@@ -302,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/downloads': {
+      id: '/_authenticated/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof AuthenticatedDownloadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/contact': {
@@ -428,10 +447,12 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
