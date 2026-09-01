@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ApiContactRouteImport } from './routes/api/contact'
+import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
@@ -48,6 +49,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 const ApiContactRoute = ApiContactRouteImport.update({
   id: '/api/contact',
   path: '/api/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
+  id: '/checkout/$slug',
+  path: '/checkout/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/contact': typeof ApiContactRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/contact': typeof ApiContactRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/contact': typeof ApiContactRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/api/contact'
+    | '/checkout/$slug'
     | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/api/contact'
+    | '/checkout/$slug'
     | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/api/contact'
+    | '/checkout/$slug'
     | '/products/$slug'
     | '/services/$id'
     | '/work/$id'
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiContactRoute: typeof ApiContactRoute
+  CheckoutSlugRoute: typeof CheckoutSlugRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   ServicesIdRoute: typeof ServicesIdRoute
   WorkIdRoute: typeof WorkIdRoute
@@ -263,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/api/contact'
       fullPath: '/api/contact'
       preLoaderRoute: typeof ApiContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$slug': {
+      id: '/checkout/$slug'
+      path: '/checkout/$slug'
+      fullPath: '/checkout/$slug'
+      preLoaderRoute: typeof CheckoutSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/': {
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiContactRoute: ApiContactRoute,
+  CheckoutSlugRoute: CheckoutSlugRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   ServicesIdRoute: ServicesIdRoute,
   WorkIdRoute: WorkIdRoute,
