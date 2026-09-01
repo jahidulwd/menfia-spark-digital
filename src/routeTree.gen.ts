@@ -17,6 +17,7 @@ import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as WorkIdRouteImport } from './routes/work.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminPagesRouteImport } from './routes/_authenticated/admin.pages'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as ApiPublicPaddleWebhookRouteImport } from './routes/api/public/paddle-webhook'
 
@@ -59,6 +60,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminPagesRoute = AuthenticatedAdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminProductsRoute =
   AuthenticatedAdminProductsRouteImport.update({
     id: '/products',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/api/contact': typeof ApiContactRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
+  '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/api/contact': typeof ApiContactRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
+  '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/api/contact': typeof ApiContactRoute
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
+  '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/api/contact'
     | '/services/$id'
     | '/work/$id'
+    | '/admin/pages'
     | '/admin/products'
     | '/api/public/paddle-webhook'
     | '/admin/'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/api/contact'
     | '/services/$id'
     | '/work/$id'
+    | '/admin/pages'
     | '/admin/products'
     | '/api/public/paddle-webhook'
     | '/admin'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/api/contact'
     | '/services/$id'
     | '/work/$id'
+    | '/_authenticated/admin/pages'
     | '/_authenticated/admin/products'
     | '/api/public/paddle-webhook'
     | '/_authenticated/admin/'
@@ -209,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/pages': {
+      id: '/_authenticated/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AuthenticatedAdminPagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/products': {
       id: '/_authenticated/admin/products'
       path: '/products'
@@ -227,11 +246,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminPagesRoute: typeof AuthenticatedAdminPagesRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminPagesRoute: AuthenticatedAdminPagesRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
