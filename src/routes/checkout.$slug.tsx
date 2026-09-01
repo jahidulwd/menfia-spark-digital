@@ -92,8 +92,14 @@ function CheckoutPage() {
 
   async function pay() {
     const parsed = emailSchema.safeParse(email);
-    if (!parsed.success) return toast.error("Enter a valid email address");
-    if (!agreed) return toast.error("Please accept the terms and refund policy first");
+    if (!parsed.success) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+    if (!agreed) {
+      toast.error("Please accept the terms and refund policy first");
+      return;
+    }
 
     setBusy(true);
     try {

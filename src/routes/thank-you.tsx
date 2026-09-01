@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/thank-you")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    order: typeof search["order"] === "string" ? (search["order"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { order?: string } =>
+    typeof search["order"] === "string" ? { order: search["order"] as string } : {},
   head: () => ({
     meta: [
       { title: "Thank you for your purchase — Menfia Digital" },
