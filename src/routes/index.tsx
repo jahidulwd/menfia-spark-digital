@@ -3,6 +3,8 @@ import { projects } from "../lib/projects";
 import { services } from "../lib/services";
 import { Reveal, SplitHeading, Tilt3D, CountUp } from "../components/Motion";
 import { ContactForm } from "../components/ContactForm";
+import { FooterLegal } from "../components/FooterLegal";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
