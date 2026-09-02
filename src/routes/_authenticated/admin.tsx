@@ -75,7 +75,7 @@ function AdminLayout() {
               await supabase.auth.signOut();
               navigate({ to: "/" });
             }}
-            className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40 hover:text-carbon"
+            className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40 hover:text-carbon"
           >
             Sign out
           </button>
