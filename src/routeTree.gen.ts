@@ -23,6 +23,7 @@ import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as WorkIdRouteImport } from './routes/work.$id'
+import { Route as AuthenticatedAccountPasswordRouteImport } from './routes/_authenticated/account.password'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
@@ -100,6 +101,12 @@ const WorkIdRoute = WorkIdRouteImport.update({
   path: '/work/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccountPasswordRoute =
+  AuthenticatedAccountPasswordRouteImport.update({
+    id: '/account/password',
+    path: '/account/password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products/': typeof ProductsIndexRoute
+  '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products': typeof ProductsIndexRoute
+  '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -199,6 +208,7 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/work/$id': typeof WorkIdRoute
   '/products/': typeof ProductsIndexRoute
+  '/_authenticated/account/password': typeof AuthenticatedAccountPasswordRoute
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/work/$id'
     | '/products/'
+    | '/account/password'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/pages'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/work/$id'
     | '/products'
+    | '/account/password'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/pages'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/work/$id'
     | '/products/'
+    | '/_authenticated/account/password'
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pages'
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account/password': {
+      id: '/_authenticated/account/password'
+      path: '/account/password'
+      fullPath: '/account/password'
+      preLoaderRoute: typeof AuthenticatedAccountPasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -468,11 +488,13 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
+  AuthenticatedAccountPasswordRoute: typeof AuthenticatedAccountPasswordRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
+  AuthenticatedAccountPasswordRoute: AuthenticatedAccountPasswordRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

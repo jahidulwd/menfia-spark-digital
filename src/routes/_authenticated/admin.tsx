@@ -63,12 +63,19 @@ function AdminLayout() {
               {tab.label}
             </Link>
           ))}
+          <Link
+            to="/account/password"
+            className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-ink/50 hover:text-carbon"
+          >
+            Password
+          </Link>
           <button
+
             onClick={async () => {
               await supabase.auth.signOut();
               navigate({ to: "/" });
             }}
-            className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40 hover:text-carbon"
+            className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40 hover:text-carbon"
           >
             Sign out
           </button>
