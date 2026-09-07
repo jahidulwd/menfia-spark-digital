@@ -7,21 +7,14 @@ import { getFooterSettings, listFooterPages } from "@/lib/store.functions";
 type FooterLink = { label: string; url: string };
 type FooterColumn = { title: string; links: FooterLink[] };
 
-function isInternal(url: string) {
-  return url.startsWith("/");
-}
-
 function FooterAnchor({ link }: { link: FooterLink }) {
-  const className = "text-sm text-white/55 transition hover:text-volt";
-  if (isInternal(link.url)) {
-    return (
-      <Link to={link.url} className={className}>
-        {link.label}
-      </Link>
-    );
-  }
+  const internal = link.url.startsWith("/") || link.url.startsWith("#");
   return (
-    <a href={link.url} target="_blank" rel="noreferrer noopener" className={className}>
+    <a
+      href={link.url}
+      {...(internal ? {} : { target: "_blank", rel: "noreferrer noopener" })}
+      className="text-sm text-white/55 transition hover:text-volt"
+    >
       {link.label}
     </a>
   );
