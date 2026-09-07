@@ -96,3 +96,61 @@ export const submitContact = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not save your message.");
     return { ok: true };
   });
+
+export type FooterSettings = {
+  brand_name: string;
+  tagline: string;
+  description: string;
+  email: string;
+  phone: string;
+  address: string;
+  copyright: string;
+  columns: { title: string; links: { label: string; url: string }[] }[];
+  socials: { label: string; url: string }[];
+};
+
+export const FOOTER_DEFAULTS: FooterSettings = {
+  brand_name: "MENFIA DIGITAL",
+  tagline: "Systems for the web",
+  description:
+    "We design, build and ship web systems — custom development, production-ready templates, plugins and scripts, plus digital marketing that compounds.",
+  email: "jahidulwd@gmail.com",
+  phone: "",
+  address: "",
+  copyright: "© 2026 Menfia Digital · Built with intent",
+  columns: [
+    {
+      title: "Company",
+      links: [
+        { label: "Services", url: "/#services" },
+        { label: "Work", url: "/#work" },
+        { label: "Contact", url: "/contact" },
+      ],
+    },
+    {
+      title: "Products",
+      links: [
+        { label: "All products", url: "/products" },
+        { label: "Downloads", url: "/downloads" },
+      ],
+    },
+  ],
+  socials: [],
+};
+
+export const getFooterSettings = createServerFn({ method: "GET" }).handler(async (): Promise<FooterSettings> => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.from("app_settings").select("value").eq("key", "footer").maybeSingle();
+  const value = (data?.value ?? {}) as Partial<FooterSettings>;
+  return {
+    brand_name: value.brand_name || FOOTER_DEFAULTS.brand_name,
+    tagline: value.tagline ?? FOOTER_DEFAULTS.tagline,
+    description: value.description ?? FOOTER_DEFAULTS.description,
+    email: value.email ?? FOOTER_DEFAULTS.email,
+    phone: value.phone ?? "",
+    address: value.address ?? "",
+    copyright: value.copyright || FOOTER_DEFAULTS.copyright,
+    columns: Array.isArray(value.columns) ? value.columns : FOOTER_DEFAULTS.columns,
+    socials: Array.isArray(value.socials) ? value.socials : [],
+  };
+});

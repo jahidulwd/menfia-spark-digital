@@ -3,14 +3,14 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type Ctx = { supabase: any; userId: string };
+type Ctx = { supabase: any; userId: string; claims?: { email?: string } };
 
 export const getMyAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const ctx = context as Ctx;
     const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
-    return { userId: ctx.userId, isAdmin: Boolean(data) };
+    return { userId: ctx.userId, isAdmin: Boolean(data), email: ctx.claims?.email ?? "" };
   });
 
 export const listMyOrders = createServerFn({ method: "GET" })
