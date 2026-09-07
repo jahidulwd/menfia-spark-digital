@@ -284,3 +284,48 @@ export const adminSignedFileUrl = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { url: signed?.signedUrl ?? null };
   });
+
+const footerLinkSchema = z.object({
+  label: z.string().trim().min(1).max(60),
+  url: z.string().trim().min(1).max(400),
+});
+
+const footerSchema = z.object({
+  brand_name: z.string().trim().min(1).max(80),
+  tagline: z.string().trim().max(120),
+  description: z.string().trim().max(600),
+  email: z.string().trim().max(160),
+  phone: z.string().trim().max(60),
+  address: z.string().trim().max(240),
+  copyright: z.string().trim().min(1).max(200),
+  columns: z
+    .array(z.object({ title: z.string().trim().min(1).max(60), links: z.array(footerLinkSchema).max(12) }))
+    .max(4),
+  socials: z.array(footerLinkSchema).max(10),
+});
+
+export const adminGetFooter = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { FOOTER_DEFAULTS } = await import("@/lib/store.functions");
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "footer")
+      .maybeSingle();
+    const value = (data?.value ?? {}) as Record<string, unknown>;
+    return { ...FOOTER_DEFAULTS, ...value };
+  });
+
+export const adminSaveFooter = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => footerSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase
+      .from("app_settings")
+      .upsert({ key: "footer", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
