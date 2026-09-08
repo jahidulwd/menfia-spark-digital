@@ -329,3 +329,164 @@ export const adminSaveFooter = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+const brandingSchema = z.object({
+  site_name: z.string().trim().min(1).max(80),
+  header_logo_url: z.string().trim().max(600),
+  footer_logo_url: z.string().trim().max(600),
+  logo_height: z.number().int().min(16).max(120),
+  favicon_url: z.string().trim().max(600),
+});
+
+export const adminGetBranding = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { BRANDING_DEFAULTS } = await import("@/lib/store.functions");
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "branding")
+      .maybeSingle();
+    return { ...BRANDING_DEFAULTS, ...((data?.value ?? {}) as Record<string, unknown>) };
+  });
+
+export const adminSaveBranding = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => brandingSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase
+      .from("app_settings")
+      .upsert({ key: "branding", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const homeSchema = z.object({
+  hero: z.object({
+    badge: z.string().trim().max(120),
+    title_line1: z.string().trim().max(120),
+    title_line2: z.string().trim().max(120),
+    subtitle: z.string().trim().max(800),
+    primary_label: z.string().trim().max(60),
+    primary_url: z.string().trim().max(300),
+    secondary_label: z.string().trim().max(60),
+    secondary_url: z.string().trim().max(300),
+  }),
+  panel_title: z.string().trim().max(80),
+  panel_stats: z.array(z.object({ label: z.string().trim().max(60), value: z.string().trim().max(20) })).max(6),
+  stats_band: z
+    .array(
+      z.object({
+        label: z.string().trim().max(60),
+        value: z.string().trim().max(20),
+        note: z.string().trim().max(120),
+      }),
+    )
+    .max(6),
+  services: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(120),
+    intro: z.string().trim().max(600),
+  }),
+  work: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(120),
+    intro: z.string().trim().max(600),
+  }),
+  process: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(120),
+    steps: z.array(z.object({ title: z.string().trim().max(80), body: z.string().trim().max(600) })).max(10),
+  }),
+  testimonials: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(120),
+    items: z
+      .array(
+        z.object({
+          quote: z.string().trim().max(600),
+          name: z.string().trim().max(80),
+          role: z.string().trim().max(120),
+        }),
+      )
+      .max(9),
+  }),
+  faq: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(120),
+    items: z.array(z.object({ q: z.string().trim().max(200), a: z.string().trim().max(2000) })).max(20),
+  }),
+  cta: z.object({
+    eyebrow: z.string().trim().max(60),
+    title: z.string().trim().max(160),
+    body: z.string().trim().max(800),
+  }),
+});
+
+export const adminGetHome = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { HOME_DEFAULTS } = await import("@/lib/store.functions");
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "home")
+      .maybeSingle();
+    const stored = (data?.value ?? {}) as Record<string, unknown>;
+    return homeSchema.parse({ ...HOME_DEFAULTS, ...stored });
+  });
+
+export const adminSaveHome = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => homeSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase
+      .from("app_settings")
+      .upsert({ key: "home", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/* ------------------------------- keep-alive ping ------------------------------ */
+
+type PingLogEntry = { at: string; source: string; ok: boolean };
+
+export const adminGetPingStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value, updated_at")
+      .eq("key", "keepalive")
+      .maybeSingle();
+    const value = (data?.value ?? {}) as { last_ping_at?: string; log?: PingLogEntry[] };
+    return {
+      last_ping_at: value.last_ping_at ?? null,
+      log: Array.isArray(value.log) ? value.log.slice(0, 20) : [],
+    };
+  });
+
+export const adminPingNow = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const supabase = (context as Ctx).supabase;
+    const { error: readError } = await supabase.from("products").select("id").limit(1);
+    const now = new Date().toISOString();
+    const { data } = await supabase.from("app_settings").select("value").eq("key", "keepalive").maybeSingle();
+    const value = (data?.value ?? {}) as { log?: PingLogEntry[] };
+    const log: PingLogEntry[] = [
+      { at: now, source: "manual", ok: !readError },
+      ...(Array.isArray(value.log) ? value.log : []),
+    ].slice(0, 20);
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ key: "keepalive", value: { last_ping_at: now, log }, updated_at: now }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: !readError, at: now };
+  });
