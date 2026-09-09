@@ -26,10 +26,16 @@ const groups = [
   {
     title: "Content",
     items: [
+      { to: "/admin/home", label: "Home page" },
       { to: "/admin/pages", label: "Pages" },
+      { to: "/admin/branding", label: "Logo" },
       { to: "/admin/footer", label: "Footer" },
       { to: "/admin/messages", label: "Messages" },
     ],
+  },
+  {
+    title: "System",
+    items: [{ to: "/admin/ping", label: "Keep-alive" }],
   },
   {
     title: "Account",
