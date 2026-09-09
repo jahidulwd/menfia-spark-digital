@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
-import { getFooterSettings, listFooterPages } from "@/lib/store.functions";
+import { getBranding, getFooterSettings, listFooterPages } from "@/lib/store.functions";
 
 type FooterLink = { label: string; url: string };
 type FooterColumn = { title: string; links: FooterLink[] };
@@ -23,9 +23,11 @@ function FooterAnchor({ link }: { link: FooterLink }) {
 export function FooterLegal() {
   const fetchPages = useServerFn(listFooterPages);
   const fetchFooter = useServerFn(getFooterSettings);
+  const fetchBranding = useServerFn(getBranding);
 
   const { data: pages } = useQuery({ queryKey: ["footer-pages"], queryFn: () => fetchPages() });
   const { data: footer } = useQuery({ queryKey: ["footer-settings"], queryFn: () => fetchFooter() });
+  const { data: branding } = useQuery({ queryKey: ["branding"], queryFn: () => fetchBranding() });
 
   const columns = (footer?.columns ?? []) as FooterColumn[];
   const socials = (footer?.socials ?? []) as FooterLink[];
@@ -35,7 +37,16 @@ export function FooterLegal() {
     <footer className="mt-20 border-t border-white/10 pt-14">
       <div className="grid gap-12 lg:grid-cols-[1.3fr_2fr]">
         <div>
-          <p className="text-sm font-extrabold tracking-tight text-volt">{footer?.brand_name}</p>
+          {branding?.footer_logo_url ? (
+            <img
+              src={branding.footer_logo_url}
+              alt={footer?.brand_name ?? branding.site_name}
+              style={{ height: `${branding.logo_height || 32}px` }}
+              className="w-auto"
+            />
+          ) : (
+            <p className="text-sm font-extrabold tracking-tight text-volt">{footer?.brand_name}</p>
+          )}
           {footer?.tagline && (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
               {footer.tagline}
