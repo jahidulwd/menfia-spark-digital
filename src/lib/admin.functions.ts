@@ -332,10 +332,10 @@ export const adminSaveFooter = createServerFn({ method: "POST" })
 
 const brandingSchema = z.object({
   site_name: z.string().trim().min(1).max(80),
-  header_logo_url: z.string().trim().max(600),
-  footer_logo_url: z.string().trim().max(600),
+  header_logo_url: z.string().trim().max(700_000),
+  footer_logo_url: z.string().trim().max(700_000),
   logo_height: z.number().int().min(16).max(120),
-  favicon_url: z.string().trim().max(600),
+  favicon_url: z.string().trim().max(700_000),
 });
 
 export const adminGetBranding = createServerFn({ method: "GET" })
