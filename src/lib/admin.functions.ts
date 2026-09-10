@@ -479,14 +479,17 @@ export const adminPingNow = createServerFn({ method: "POST" })
     const { error: readError } = await supabase.from("products").select("id").limit(1);
     const now = new Date().toISOString();
     const { data } = await supabase.from("app_settings").select("value").eq("key", "keepalive").maybeSingle();
-    const value = (data?.value ?? {}) as { log?: PingLogEntry[] };
+    const value = (data?.value ?? {}) as Record<string, unknown> & { log?: PingLogEntry[] };
     const log: PingLogEntry[] = [
       { at: now, source: "manual", ok: !readError },
       ...(Array.isArray(value.log) ? value.log : []),
     ].slice(0, 20);
     const { error } = await supabase
       .from("app_settings")
-      .upsert({ key: "keepalive", value: { last_ping_at: now, log }, updated_at: now }, { onConflict: "key" });
+      .upsert(
+        { key: "keepalive", value: { ...value, last_ping_at: now, log }, updated_at: now },
+        { onConflict: "key" },
+      );
     if (error) throw new Error(error.message);
     return { ok: !readError, at: now };
   });

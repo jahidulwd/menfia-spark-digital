@@ -20,7 +20,7 @@ async function handle(request: Request) {
 
   await supabaseAdmin
     .from("app_settings")
-    .upsert({ key: "keepalive", value: { last_ping_at: now, log }, updated_at: now }, { onConflict: "key" });
+    .upsert({ key: "keepalive", value: { ...value, last_ping_at: now, log }, updated_at: now }, { onConflict: "key" });
 
   return new Response(JSON.stringify({ ok: !readError, at: now }), {
     headers: { "Content-Type": "application/json" },
