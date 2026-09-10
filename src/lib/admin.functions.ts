@@ -332,10 +332,10 @@ export const adminSaveFooter = createServerFn({ method: "POST" })
 
 const brandingSchema = z.object({
   site_name: z.string().trim().min(1).max(80),
-  header_logo_url: z.string().trim().max(600),
-  footer_logo_url: z.string().trim().max(600),
+  header_logo_url: z.string().trim().max(700_000),
+  footer_logo_url: z.string().trim().max(700_000),
   logo_height: z.number().int().min(16).max(120),
-  favicon_url: z.string().trim().max(600),
+  favicon_url: z.string().trim().max(700_000),
 });
 
 export const adminGetBranding = createServerFn({ method: "GET" })
@@ -479,14 +479,60 @@ export const adminPingNow = createServerFn({ method: "POST" })
     const { error: readError } = await supabase.from("products").select("id").limit(1);
     const now = new Date().toISOString();
     const { data } = await supabase.from("app_settings").select("value").eq("key", "keepalive").maybeSingle();
-    const value = (data?.value ?? {}) as { log?: PingLogEntry[] };
+    const value = (data?.value ?? {}) as Record<string, unknown> & { log?: PingLogEntry[] };
     const log: PingLogEntry[] = [
       { at: now, source: "manual", ok: !readError },
       ...(Array.isArray(value.log) ? value.log : []),
     ].slice(0, 20);
     const { error } = await supabase
       .from("app_settings")
-      .upsert({ key: "keepalive", value: { last_ping_at: now, log }, updated_at: now }, { onConflict: "key" });
+      .upsert(
+        { key: "keepalive", value: { ...value, last_ping_at: now, log }, updated_at: now },
+        { onConflict: "key" },
+      );
     if (error) throw new Error(error.message);
     return { ok: !readError, at: now };
+  });
+
+/* ---------------------------------- header ---------------------------------- */
+
+const headerLinkSchema = z.object({ label: z.string().trim().max(80), url: z.string().trim().max(300) });
+
+const headerSchema = z.object({
+  cta_label: z.string().trim().max(40),
+  cta_url: z.string().trim().max(300),
+  menu_label: z.string().trim().max(20),
+  close_label: z.string().trim().max(20),
+  nav: z.array(headerLinkSchema).max(10),
+  panel_cta_label: z.string().trim().max(40),
+  panel_cta_url: z.string().trim().max(300),
+  blocks: z
+    .array(z.object({ title: z.string().trim().max(60), lines: z.array(headerLinkSchema).max(6) }))
+    .max(4),
+  socials: z.array(headerLinkSchema).max(6),
+});
+
+export const adminGetHeader = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { HEADER_DEFAULTS } = await import("@/lib/store.functions");
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "header")
+      .maybeSingle();
+    return headerSchema.parse({ ...HEADER_DEFAULTS, ...((data?.value ?? {}) as Record<string, unknown>) });
+  });
+
+export const adminSaveHeader = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => headerSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase
+      .from("app_settings")
+      .upsert({ key: "header", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
