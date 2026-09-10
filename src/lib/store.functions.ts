@@ -330,3 +330,61 @@ export const getHomeContent = createServerFn({ method: "GET" }).handler(async ()
   const { data } = await publicClient().from("app_settings").select("value").eq("key", "home").maybeSingle();
   return mergeDeep(HOME_DEFAULTS, data?.value);
 });
+
+/* ---------------------------------- header ---------------------------------- */
+
+export type HeaderLink = { label: string; url: string };
+export type HeaderBlock = { title: string; lines: HeaderLink[] };
+
+export type HeaderSettings = {
+  cta_label: string;
+  cta_url: string;
+  menu_label: string;
+  close_label: string;
+  nav: HeaderLink[];
+  panel_cta_label: string;
+  panel_cta_url: string;
+  blocks: HeaderBlock[];
+  socials: HeaderLink[];
+};
+
+export const HEADER_DEFAULTS: HeaderSettings = {
+  cta_label: "Start a build",
+  cta_url: "/contact",
+  menu_label: "Menu",
+  close_label: "Close",
+  nav: [
+    { label: "Home", url: "/" },
+    { label: "Services", url: "/#services" },
+    { label: "Work", url: "/#work" },
+    { label: "Products", url: "/products" },
+    { label: "Process", url: "/#process" },
+    { label: "FAQ", url: "/#faq" },
+    { label: "Contact", url: "/contact" },
+  ],
+  panel_cta_label: "Start a build",
+  panel_cta_url: "/contact",
+  blocks: [
+    {
+      title: "Get in touch",
+      lines: [
+        { label: "hello@menfiadigital.com", url: "mailto:hello@menfiadigital.com" },
+        { label: "+880 1700 000000", url: "tel:+8801700000000" },
+      ],
+    },
+    {
+      title: "Studio",
+      lines: [{ label: "Remote-first — clients in 12 countries", url: "" }],
+    },
+  ],
+  socials: [
+    { label: "Instagram", url: "https://instagram.com" },
+    { label: "LinkedIn", url: "https://linkedin.com" },
+    { label: "GitHub", url: "https://github.com" },
+  ],
+};
+
+export const getHeaderSettings = createServerFn({ method: "GET" }).handler(async (): Promise<HeaderSettings> => {
+  const { data } = await publicClient().from("app_settings").select("value").eq("key", "header").maybeSingle();
+  return mergeDeep(HEADER_DEFAULTS, data?.value);
+});

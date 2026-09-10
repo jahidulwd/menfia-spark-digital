@@ -493,3 +493,46 @@ export const adminPingNow = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: !readError, at: now };
   });
+
+/* ---------------------------------- header ---------------------------------- */
+
+const headerLinkSchema = z.object({ label: z.string().trim().max(80), url: z.string().trim().max(300) });
+
+const headerSchema = z.object({
+  cta_label: z.string().trim().max(40),
+  cta_url: z.string().trim().max(300),
+  menu_label: z.string().trim().max(20),
+  close_label: z.string().trim().max(20),
+  nav: z.array(headerLinkSchema).max(10),
+  panel_cta_label: z.string().trim().max(40),
+  panel_cta_url: z.string().trim().max(300),
+  blocks: z
+    .array(z.object({ title: z.string().trim().max(60), lines: z.array(headerLinkSchema).max(6) }))
+    .max(4),
+  socials: z.array(headerLinkSchema).max(6),
+});
+
+export const adminGetHeader = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { HEADER_DEFAULTS } = await import("@/lib/store.functions");
+    const { data } = await (context as Ctx).supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "header")
+      .maybeSingle();
+    return headerSchema.parse({ ...HEADER_DEFAULTS, ...((data?.value ?? {}) as Record<string, unknown>) });
+  });
+
+export const adminSaveHeader = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => headerSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase
+      .from("app_settings")
+      .upsert({ key: "header", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
