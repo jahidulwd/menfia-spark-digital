@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { adminGetBranding, adminSaveBranding } from "@/lib/admin.functions";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/branding")({
   component: AdminBranding,
@@ -47,12 +46,15 @@ function AdminBranding() {
   async function upload(field: keyof Branding, file: File) {
     setUploading(field as string);
     try {
-      const path = `branding/${field}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`;
-      const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
-      if (error) throw error;
-      const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-      setForm((prev) => (prev ? { ...prev, [field]: pub.publicUrl } : prev));
-      toast.success("Uploaded — remember to save");
+      if (file.size > 400_000) throw new Error("Please use an image under 400 KB");
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read that file"));
+        reader.readAsDataURL(file);
+      });
+      setForm((prev) => (prev ? { ...prev, [field]: dataUrl } : prev));
+      toast.success("Image added — press save to publish it");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
