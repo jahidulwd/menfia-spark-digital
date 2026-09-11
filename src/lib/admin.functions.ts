@@ -39,6 +39,9 @@ const productSchema = z.object({
   external_download_url: z.string().trim().max(600).optional().or(z.literal("")),
   paddle_price_id: z.string().trim().max(120).optional().or(z.literal("")),
   sort_order: z.number().int().min(0).max(9999),
+  license_enabled: z.boolean(),
+  license_period: z.enum(["lifetime", "monthly", "yearly"]),
+  license_activation_limit: z.number().int().min(1).max(1000),
 });
 
 const nullify = (value: string | undefined) => (value && value.length > 0 ? value : null);
@@ -95,6 +98,9 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
       external_download_url: nullify(data.external_download_url),
       paddle_price_id: nullify(data.paddle_price_id),
       sort_order: data.sort_order,
+      license_enabled: data.license_enabled,
+      license_period: data.license_period,
+      license_activation_limit: data.license_activation_limit,
       updated_at: new Date().toISOString(),
     };
 
@@ -237,7 +243,7 @@ export const adminListOrders = createServerFn({ method: "GET" })
     await assertAdmin(context as Ctx);
     const { data, error } = await (context as Ctx).supabase
       .from("orders")
-      .select("id, email, amount_cents, currency, status, paddle_transaction_id, created_at, products(title, slug)")
+      .select("id, email, amount_cents, currency, status, paddle_transaction_id, created_at, products(title, slug, license_enabled), licenses(license_key, status, expires_at)")
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw new Error(error.message);
@@ -535,4 +541,131 @@ export const adminSaveHeader = createServerFn({ method: "POST" })
       .upsert({ key: "header", value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+/* --------------------------------- licenses --------------------------------- */
+
+export const adminListLicenses = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const { data, error } = await (context as Ctx).supabase
+      .from("licenses")
+      .select(
+        "id, license_key, email, status, period, activation_limit, issued_at, expires_at, last_checked_at, notes, created_at, order_id, products(title, slug), license_activations(id, domain, active, activated_at, last_seen_at, product_version)",
+      )
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const licenseUpdateSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["active", "expired", "suspended", "revoked"]).optional(),
+  period: z.enum(["lifetime", "monthly", "yearly"]).optional(),
+  activation_limit: z.number().int().min(1).max(1000).optional(),
+  expires_at: z.string().trim().max(40).nullable().optional(),
+  notes: z.string().trim().max(2000).optional(),
+});
+
+export const adminUpdateLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => licenseUpdateSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { id, ...rest } = data;
+    const payload: Record<string, unknown> = { ...rest };
+    if ("expires_at" in payload) {
+      const value = payload["expires_at"];
+      payload["expires_at"] = value ? new Date(value as string).toISOString() : null;
+    }
+    const { error } = await (context as Ctx).supabase.from("licenses").update(payload).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Extends a license by one more period from today (or from its current expiry). */
+export const adminRenewLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const supabase = (context as Ctx).supabase;
+    const { data: row, error: readError } = await supabase
+      .from("licenses")
+      .select("id, period, expires_at")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readError || !row) throw new Error("License not found");
+
+    const { computeExpiry } = await import("@/lib/licensing.server");
+    const from = row.expires_at && new Date(row.expires_at) > new Date() ? new Date(row.expires_at) : new Date();
+    const expires = computeExpiry(row.period, from);
+    const { error } = await supabase
+      .from("licenses")
+      .update({ status: "active", expires_at: expires })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { expires_at: expires };
+  });
+
+export const adminDeleteLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { error } = await (context as Ctx).supabase.from("licenses").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminSetActivation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid(), active: z.boolean(), remove: z.boolean().optional() }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const supabase = (context as Ctx).supabase;
+    if (data.remove) {
+      const { error } = await supabase.from("license_activations").delete().eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { ok: true };
+    }
+    const { error } = await supabase.from("license_activations").update({ active: data.active }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Issues a key by hand — useful for manual or off-platform sales. */
+export const adminIssueLicense = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        product_id: z.string().uuid(),
+        email: z.string().trim().email().max(255),
+        period: z.enum(["lifetime", "monthly", "yearly"]),
+        activation_limit: z.number().int().min(1).max(1000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const { computeExpiry } = await import("@/lib/licensing.server");
+    const { data: row, error } = await (context as Ctx).supabase
+      .from("licenses")
+      .insert({
+        product_id: data.product_id,
+        email: data.email,
+        period: data.period,
+        activation_limit: data.activation_limit,
+        status: "active",
+        expires_at: computeExpiry(data.period),
+      })
+      .select("license_key")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { license_key: row?.license_key ?? null };
   });
