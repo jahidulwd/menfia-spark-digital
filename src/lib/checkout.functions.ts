@@ -88,5 +88,7 @@ export const markOrderCompleted = createServerFn({ method: "POST" })
       .eq("id", data.orderId)
       .eq("status", "pending");
     if (error) throw new Error("Could not confirm the order.");
-    return { ok: true };
+    const { issueLicenseForOrder } = await import("@/lib/licensing.server");
+    const license = await issueLicenseForOrder(data.orderId);
+    return { ok: true, licenseKey: license?.licenseKey ?? null };
   });

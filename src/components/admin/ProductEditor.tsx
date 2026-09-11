@@ -24,6 +24,9 @@ export type ProductDraft = {
   external_download_url: string;
   paddle_price_id: string;
   sort_order: number;
+  license_enabled: boolean;
+  license_period: "lifetime" | "monthly" | "yearly";
+  license_activation_limit: number;
 };
 
 export const emptyProduct: ProductDraft = {
@@ -46,6 +49,9 @@ export const emptyProduct: ProductDraft = {
   external_download_url: "",
   paddle_price_id: "",
   sort_order: 0,
+  license_enabled: false,
+  license_period: "lifetime",
+  license_activation_limit: 1,
 };
 
 const input =
@@ -278,6 +284,44 @@ export function ProductEditor({
             />
           </Field>
         </div>
+      </div>
+
+      <div className="mt-6 rounded-lg border border-steel p-4">
+        <p className={label}>Licensing</p>
+        <label className="mt-3 flex items-center gap-2 text-sm text-ink/70">
+          <input
+            type="checkbox"
+            checked={draft.license_enabled}
+            onChange={(e) => set("license_enabled", e.target.checked)}
+          />
+          This is a licensed product — buyers get a key automatically
+        </label>
+        {draft.license_enabled && (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Field>
+              <span className={label}>Licence type</span>
+              <select
+                className={input}
+                value={draft.license_period}
+                onChange={(e) => set("license_period", e.target.value as ProductDraft["license_period"])}
+              >
+                <option value="lifetime">lifetime</option>
+                <option value="monthly">monthly</option>
+                <option value="yearly">yearly</option>
+              </select>
+            </Field>
+            <Field>
+              <span className={label}>Domains allowed per key</span>
+              <input
+                type="number"
+                min={1}
+                className={input}
+                value={draft.license_activation_limit}
+                onChange={(e) => set("license_activation_limit", Math.max(1, Number(e.target.value) || 1))}
+              />
+            </Field>
+          </div>
+        )}
       </div>
 
       <label className="mt-6 flex items-center gap-2 text-sm text-ink/70">
