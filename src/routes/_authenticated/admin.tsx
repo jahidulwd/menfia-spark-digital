@@ -27,6 +27,7 @@ const groups = [
     title: "Content",
     items: [
       { to: "/admin/home", label: "Home page" },
+      { to: "/admin/header", label: "Header" },
       { to: "/admin/pages", label: "Pages" },
       { to: "/admin/branding", label: "Logo" },
       { to: "/admin/footer", label: "Footer" },

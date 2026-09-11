@@ -27,6 +27,7 @@ import { Route as AuthenticatedAccountPasswordRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBrandingRouteImport } from './routes/_authenticated/admin.branding'
 import { Route as AuthenticatedAdminFooterRouteImport } from './routes/_authenticated/admin.footer'
+import { Route as AuthenticatedAdminHeaderRouteImport } from './routes/_authenticated/admin.header'
 import { Route as AuthenticatedAdminHomeRouteImport } from './routes/_authenticated/admin.home'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
@@ -129,6 +130,12 @@ const AuthenticatedAdminFooterRoute =
     path: '/footer',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminHeaderRoute =
+  AuthenticatedAdminHeaderRouteImport.update({
+    id: '/header',
+    path: '/header',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminHomeRoute = AuthenticatedAdminHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/branding': typeof AuthenticatedAdminBrandingRoute
   '/admin/footer': typeof AuthenticatedAdminFooterRoute
+  '/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/admin/home': typeof AuthenticatedAdminHomeRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -223,6 +231,7 @@ export interface FileRoutesByTo {
   '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/branding': typeof AuthenticatedAdminBrandingRoute
   '/admin/footer': typeof AuthenticatedAdminFooterRoute
+  '/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/admin/home': typeof AuthenticatedAdminHomeRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -253,6 +262,7 @@ export interface FileRoutesById {
   '/_authenticated/account/password': typeof AuthenticatedAccountPasswordRoute
   '/_authenticated/admin/branding': typeof AuthenticatedAdminBrandingRoute
   '/_authenticated/admin/footer': typeof AuthenticatedAdminFooterRoute
+  '/_authenticated/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/_authenticated/admin/home': typeof AuthenticatedAdminHomeRoute
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/account/password'
     | '/admin/branding'
     | '/admin/footer'
+    | '/admin/header'
     | '/admin/home'
     | '/admin/messages'
     | '/admin/orders'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/account/password'
     | '/admin/branding'
     | '/admin/footer'
+    | '/admin/header'
     | '/admin/home'
     | '/admin/messages'
     | '/admin/orders'
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account/password'
     | '/_authenticated/admin/branding'
     | '/_authenticated/admin/footer'
+    | '/_authenticated/admin/header'
     | '/_authenticated/admin/home'
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/orders'
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFooterRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/header': {
+      id: '/_authenticated/admin/header'
+      path: '/header'
+      fullPath: '/admin/header'
+      preLoaderRoute: typeof AuthenticatedAdminHeaderRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/home': {
       id: '/_authenticated/admin/home'
       path: '/home'
@@ -565,6 +585,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBrandingRoute: typeof AuthenticatedAdminBrandingRoute
   AuthenticatedAdminFooterRoute: typeof AuthenticatedAdminFooterRoute
+  AuthenticatedAdminHeaderRoute: typeof AuthenticatedAdminHeaderRoute
   AuthenticatedAdminHomeRoute: typeof AuthenticatedAdminHomeRoute
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
@@ -578,6 +599,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBrandingRoute: AuthenticatedAdminBrandingRoute,
   AuthenticatedAdminFooterRoute: AuthenticatedAdminFooterRoute,
+  AuthenticatedAdminHeaderRoute: AuthenticatedAdminHeaderRoute,
   AuthenticatedAdminHomeRoute: AuthenticatedAdminHomeRoute,
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
