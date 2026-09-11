@@ -33,6 +33,9 @@ function toDraft(row: any): ProductDraft {
     external_download_url: row.external_download_url ?? "",
     paddle_price_id: row.paddle_price_id ?? "",
     sort_order: row.sort_order ?? 0,
+    license_enabled: Boolean(row.license_enabled),
+    license_period: row.license_period ?? "lifetime",
+    license_activation_limit: row.license_activation_limit ?? 1,
   };
 }
 
@@ -102,20 +105,21 @@ function AdminProducts() {
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">File</th>
+              <th className="px-4 py-3">Licence</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {isLoading && (
               <tr>
-                <td className="px-4 py-6 text-ink/50" colSpan={6}>
+                <td className="px-4 py-6 text-ink/50" colSpan={7}>
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && (data ?? []).length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-ink/50" colSpan={6}>
+                <td className="px-4 py-6 text-ink/50" colSpan={7}>
                   No products yet — create your first one.
                 </td>
               </tr>
@@ -138,6 +142,9 @@ function AdminProducts() {
                 </td>
                 <td className="px-4 py-3 text-xs text-ink/50">
                   {row.file_path ? "uploaded" : row.external_download_url ? "external" : "—"}
+                </td>
+                <td className="px-4 py-3 font-mono text-[10px] uppercase text-ink/50">
+                  {row.license_enabled ? row.license_period : "—"}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button

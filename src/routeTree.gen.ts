@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as ApiPublicKeepaliveRouteImport } from './routes/api/public/keepalive'
 import { Route as ApiPublicPaddleWebhookRouteImport } from './routes/api/public/paddle-webhook'
+import { Route as ApiPublicLicenseActionRouteImport } from './routes/api/public/license/$action'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -185,6 +186,11 @@ const ApiPublicPaddleWebhookRoute = ApiPublicPaddleWebhookRouteImport.update({
   path: '/api/public/paddle-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLicenseActionRoute = ApiPublicLicenseActionRouteImport.update({
+  id: '/api/public/license/$action',
+  path: '/api/public/license/$action',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -214,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/license/$action': typeof ApiPublicLicenseActionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/license/$action': typeof ApiPublicLicenseActionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/license/$action': typeof ApiPublicLicenseActionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
     | '/admin/'
+    | '/api/public/license/$action'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
     | '/admin'
+    | '/api/public/license/$action'
   id:
     | '__root__'
     | '/'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
     | '/_authenticated/admin/'
+    | '/api/public/license/$action'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -379,6 +391,7 @@ export interface RootRouteChildren {
   ProductsIndexRoute: typeof ProductsIndexRoute
   ApiPublicKeepaliveRoute: typeof ApiPublicKeepaliveRoute
   ApiPublicPaddleWebhookRoute: typeof ApiPublicPaddleWebhookRoute
+  ApiPublicLicenseActionRoute: typeof ApiPublicLicenseActionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -579,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaddleWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/license/$action': {
+      id: '/api/public/license/$action'
+      path: '/api/public/license/$action'
+      fullPath: '/api/public/license/$action'
+      preLoaderRoute: typeof ApiPublicLicenseActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -643,6 +663,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsIndexRoute: ProductsIndexRoute,
   ApiPublicKeepaliveRoute: ApiPublicKeepaliveRoute,
   ApiPublicPaddleWebhookRoute: ApiPublicPaddleWebhookRoute,
+  ApiPublicLicenseActionRoute: ApiPublicLicenseActionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

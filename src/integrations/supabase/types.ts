@@ -77,6 +77,125 @@ export type Database = {
         }
         Relationships: []
       }
+      license_activations: {
+        Row: {
+          activated_at: string
+          active: boolean
+          created_at: string
+          domain: string
+          id: string
+          instance_id: string | null
+          ip_address: string | null
+          last_seen_at: string
+          license_id: string
+          product_version: string | null
+          updated_at: string
+        }
+        Insert: {
+          activated_at?: string
+          active?: boolean
+          created_at?: string
+          domain: string
+          id?: string
+          instance_id?: string | null
+          ip_address?: string | null
+          last_seen_at?: string
+          license_id: string
+          product_version?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activated_at?: string
+          active?: boolean
+          created_at?: string
+          domain?: string
+          id?: string
+          instance_id?: string | null
+          ip_address?: string | null
+          last_seen_at?: string
+          license_id?: string
+          product_version?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_activations_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      licenses: {
+        Row: {
+          activation_limit: number
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          last_checked_at: string | null
+          license_key: string
+          notes: string | null
+          order_id: string | null
+          period: Database["public"]["Enums"]["license_period"]
+          product_id: string | null
+          status: Database["public"]["Enums"]["license_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          activation_limit?: number
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          last_checked_at?: string | null
+          license_key?: string
+          notes?: string | null
+          order_id?: string | null
+          period?: Database["public"]["Enums"]["license_period"]
+          product_id?: string | null
+          status?: Database["public"]["Enums"]["license_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          activation_limit?: number
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          last_checked_at?: string | null
+          license_key?: string
+          notes?: string | null
+          order_id?: string | null
+          period?: Database["public"]["Enums"]["license_period"]
+          product_id?: string | null
+          status?: Database["public"]["Enums"]["license_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "licenses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "licenses_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           amount_cents: number
@@ -170,6 +289,9 @@ export type Database = {
           file_path: string | null
           gallery: Json
           id: string
+          license_activation_limit: number
+          license_enabled: boolean
+          license_period: Database["public"]["Enums"]["license_period"]
           paddle_price_id: string | null
           price_cents: number
           slug: string
@@ -194,6 +316,9 @@ export type Database = {
           file_path?: string | null
           gallery?: Json
           id?: string
+          license_activation_limit?: number
+          license_enabled?: boolean
+          license_period?: Database["public"]["Enums"]["license_period"]
           paddle_price_id?: string | null
           price_cents?: number
           slug: string
@@ -218,6 +343,9 @@ export type Database = {
           file_path?: string | null
           gallery?: Json
           id?: string
+          license_activation_limit?: number
+          license_enabled?: boolean
+          license_period?: Database["public"]["Enums"]["license_period"]
           paddle_price_id?: string | null
           price_cents?: number
           slug?: string
@@ -277,6 +405,7 @@ export type Database = {
     }
     Functions: {
       bootstrap_current_user: { Args: never; Returns: undefined }
+      generate_license_key: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -287,6 +416,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "customer"
+      license_period: "lifetime" | "monthly" | "yearly"
+      license_status: "active" | "expired" | "suspended" | "revoked"
       order_status: "pending" | "paid" | "failed" | "refunded"
       product_status: "draft" | "published"
       product_type:
@@ -424,6 +555,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "customer"],
+      license_period: ["lifetime", "monthly", "yearly"],
+      license_status: ["active", "expired", "suspended", "revoked"],
       order_status: ["pending", "paid", "failed", "refunded"],
       product_status: ["draft", "published"],
       product_type: [

@@ -27,20 +27,21 @@ function AdminOrders() {
               <th className="px-4 py-3">Customer</th>
               <th className="px-4 py-3">Amount</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Licence key</th>
               <th className="px-4 py-3">Transaction</th>
             </tr>
           </thead>
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-ink/50">
+                <td colSpan={7} className="px-4 py-6 text-ink/50">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && (data ?? []).length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-ink/50">
+                <td colSpan={7} className="px-4 py-6 text-ink/50">
                   No orders yet.
                 </td>
               </tr>
@@ -61,6 +62,9 @@ function AdminOrders() {
                   >
                     {row.status}
                   </span>
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-carbon">
+                  {row.licenses?.[0]?.license_key ?? (row.products?.license_enabled ? "pending" : "—")}
                 </td>
                 <td className="px-4 py-3 font-mono text-xs text-ink/50">{row.paddle_transaction_id ?? "—"}</td>
               </tr>

@@ -20,6 +20,7 @@ const groups = [
     items: [
       { to: "/admin/products", label: "Products" },
       { to: "/admin/orders", label: "Orders" },
+      { to: "/admin/licenses", label: "Licences" },
       { to: "/admin/settings", label: "Paddle" },
     ],
   },

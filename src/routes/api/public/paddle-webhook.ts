@@ -62,6 +62,10 @@ export const Route = createFileRoute("/api/public/paddle-webhook")({
               .from("orders")
               .update({ status, ...(transactionId ? { paddle_transaction_id: transactionId } : {}) })
               .eq("id", orderId);
+            if (status === "paid") {
+              const { issueLicenseForOrder } = await import("@/lib/licensing.server");
+              await issueLicenseForOrder(orderId);
+            }
           }
         }
 
