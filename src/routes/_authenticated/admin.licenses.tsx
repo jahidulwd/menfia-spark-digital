@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -244,7 +244,7 @@ function AdminLicenses() {
               const activations = row.license_activations ?? [];
               const activeCount = activations.filter((a: any) => a.active).length;
               return (
-                <>
+                <Fragment key={row.id}>
                   <tr key={row.id} className="border-b border-steel/60 last:border-0">
                     <td className="px-4 py-3">
                       <button
@@ -384,7 +384,7 @@ function AdminLicenses() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </tbody>
