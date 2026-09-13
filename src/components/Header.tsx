@@ -1,10 +1,90 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { useAuth } from "@/hooks/useAuth";
 import { getBranding, getHeaderSettings, HEADER_DEFAULTS, type HeaderLink } from "@/lib/store.functions";
+
+function AccountMenu({ dark }: { dark?: boolean }) {
+  const { user, signOut } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  if (!user) {
+    return (
+      <Link
+        to="/auth"
+        className={`rounded-full border px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] transition ${
+          dark
+            ? "border-white/30 text-white hover:border-volt hover:text-volt"
+            : "border-carbon/25 text-carbon hover:border-carbon"
+        }`}
+      >
+        Login
+      </Link>
+    );
+  }
+
+  const label = user.user_metadata?.full_name || user.email?.split("@")[0] || "Account";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className={`flex items-center gap-2 rounded-full border px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] transition ${
+          dark
+            ? "border-white/30 text-white hover:border-volt hover:text-volt"
+            : "border-carbon/25 text-carbon hover:border-carbon"
+        }`}
+      >
+        {label}
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`transition-transform ${open ? "rotate-180" : ""}`}>
+          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-steel bg-white shadow-xl">
+          <Link
+            to="/downloads"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-3 text-sm font-semibold text-carbon transition hover:bg-titan"
+          >
+            My account
+          </Link>
+          <Link
+            to="/account/password"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-3 text-sm font-semibold text-carbon transition hover:bg-titan"
+          >
+            Change password
+          </Link>
+          <button
+            onClick={async () => {
+              setOpen(false);
+              await signOut();
+              navigate({ to: "/" });
+            }}
+            className="block w-full px-4 py-3 text-left text-sm font-semibold text-red-600 transition hover:bg-titan"
+          >
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Anchor({ link, className }: { link: HeaderLink; className: string }) {
   const external = !(link.url.startsWith("/") || link.url.startsWith("#"));
