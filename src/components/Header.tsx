@@ -145,12 +145,6 @@ export function Header() {
 
         <div className="flex items-center gap-4 sm:gap-5">
           <AccountMenu dark={open} />
-          <Anchor
-            link={{ label: h.cta_label, url: h.cta_url }}
-            className={`hidden rounded-full px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] transition sm:inline-flex ${
-              open ? "bg-volt text-carbon" : "bg-volt text-carbon hover:brightness-95"
-            }`}
-          />
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
