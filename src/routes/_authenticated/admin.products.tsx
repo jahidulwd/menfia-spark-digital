@@ -5,7 +5,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProductEditor, emptyProduct, type ProductDraft } from "@/components/admin/ProductEditor";
-import { adminDeleteProduct, adminListProducts, adminSaveProduct } from "@/lib/admin.functions";
+import {
+  adminDeleteProduct,
+  adminListProducts,
+  adminSaveProduct,
+  adminSyncPaddlePrices,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   component: AdminProducts,
