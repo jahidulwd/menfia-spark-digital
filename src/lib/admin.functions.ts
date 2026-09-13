@@ -237,6 +237,69 @@ export const adminSavePaddleSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Pulls live prices from Paddle and updates every product linked to a Paddle price ID. */
+export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as Ctx);
+    const supabase = (context as Ctx).supabase;
+
+    const { data: settingsRow } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "paddle")
+      .maybeSingle();
+    const settings = (settingsRow?.value ?? {}) as Record<string, string>;
+    const apiKey = settings["api_key"];
+    if (!apiKey) throw new Error("Add your Paddle API key in Settings first.");
+
+    const base =
+      settings["environment"] === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
+
+    const res = await fetch(`${base}/prices?per_page=200&status=active`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (!res.ok) throw new Error("Paddle rejected the request. Check the API key and environment.");
+    const payload = (await res.json()) as { data?: any[] };
+    const prices = payload.data ?? [];
+
+    const byId = new Map<string, { amount: number; currency: string }>();
+    for (const price of prices) {
+      const amount = Number(price?.unit_price?.amount);
+      const currency = String(price?.unit_price?.currency_code ?? "USD");
+      if (price?.id && Number.isFinite(amount)) byId.set(String(price.id), { amount, currency });
+    }
+
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, title, price_cents, currency, paddle_price_id");
+
+    let updated = 0;
+    const missing: string[] = [];
+    const unlinked: string[] = [];
+
+    for (const product of products ?? []) {
+      if (!product.paddle_price_id) {
+        unlinked.push(product.title);
+        continue;
+      }
+      const match = byId.get(product.paddle_price_id);
+      if (!match) {
+        missing.push(product.title);
+        continue;
+      }
+      if (match.amount !== product.price_cents || match.currency !== product.currency) {
+        const { error } = await supabase
+          .from("products")
+          .update({ price_cents: match.amount, currency: match.currency, updated_at: new Date().toISOString() })
+          .eq("id", product.id);
+        if (!error) updated += 1;
+      }
+    }
+
+    return { updated, missing, unlinked, pricesFound: byId.size };
+  });
+
 export const adminListOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
