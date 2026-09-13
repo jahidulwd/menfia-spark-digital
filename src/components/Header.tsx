@@ -36,7 +36,7 @@ function AccountMenu({ dark }: { dark?: boolean }) {
     );
   }
 
-  const label = user.user_metadata?.full_name || user.email?.split("@")[0] || "Account";
+  const label = user.user_metadata?.["full_name"] || user.email?.split("@")[0] || "Account";
 
   return (
     <div ref={ref} className="relative">
