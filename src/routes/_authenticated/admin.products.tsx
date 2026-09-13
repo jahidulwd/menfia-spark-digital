@@ -49,6 +49,7 @@ function AdminProducts() {
   const list = useServerFn(adminListProducts);
   const save = useServerFn(adminSaveProduct);
   const remove = useServerFn(adminDeleteProduct);
+  const syncPaddle = useServerFn(adminSyncPaddlePrices);
   const [draft, setDraft] = useState<ProductDraft | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ["admin-products"], queryFn: () => list() });
