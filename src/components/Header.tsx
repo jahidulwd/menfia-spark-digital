@@ -145,12 +145,6 @@ export function Header() {
 
         <div className="flex items-center gap-4 sm:gap-5">
           <AccountMenu dark={open} />
-          <Anchor
-            link={{ label: h.cta_label, url: h.cta_url }}
-            className={`hidden rounded-full px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] transition sm:inline-flex ${
-              open ? "bg-volt text-carbon" : "bg-volt text-carbon hover:brightness-95"
-            }`}
-          />
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
@@ -186,9 +180,9 @@ export function Header() {
       <div
         id="header-panel"
         className="overflow-hidden bg-carbon transition-[max-height] duration-500 ease-in-out"
-        style={{ maxHeight: open ? "min(90vh, 640px)" : 0 }}
+        style={{ maxHeight: open ? "min(90vh, 480px)" : 0 }}
       >
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-12 pt-2 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
+        <div className="mx-auto max-w-7xl px-6 pb-10 pt-2 lg:px-10">
           <nav aria-label="Primary" className="flex flex-col pt-2">
             {h.nav.map((link) => (
               <a
@@ -218,53 +212,6 @@ export function Header() {
               </Link>
             )}
           </nav>
-
-          <div className="flex flex-col gap-7 pt-2">
-            <Anchor
-              link={{ label: h.panel_cta_label, url: h.panel_cta_url }}
-              className="w-fit rounded-full bg-volt px-6 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-carbon"
-            />
-
-            {h.blocks.map((block) => (
-              <div key={block.title}>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
-                  {block.title}
-                </p>
-                <div className="mt-2 space-y-1.5">
-                  {block.lines.map((line) =>
-                    line.url ? (
-                      <Anchor
-                        key={line.label}
-                        link={line}
-                        className="block text-sm leading-relaxed text-white/80 transition hover:text-volt"
-                      />
-                    ) : (
-                      <p key={line.label} className="text-sm leading-relaxed text-white/60">
-                        {line.label}
-                      </p>
-                    ),
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {h.socials.length > 0 && (
-              <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
-                  Follow along
-                </p>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {h.socials.map((social) => (
-                    <Anchor
-                      key={social.label}
-                      link={social}
-                      className="rounded-full border border-white/25 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] text-white/70 transition hover:border-volt hover:text-volt"
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </header>
