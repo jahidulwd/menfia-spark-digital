@@ -119,7 +119,7 @@ export function Header() {
         open ? "border-white/10 bg-carbon" : "border-steel bg-titan/85 backdrop-blur-sm"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         <Link to="/" onClick={() => setOpen(false)} className="flex items-center">
           {logo ? (
             <img src={logo} alt={name} style={{ height: `${logoHeight}px` }} className="w-auto" />
@@ -128,7 +128,23 @@ export function Header() {
           )}
         </Link>
 
-        <div className="flex items-center gap-5 sm:gap-7">
+        <nav
+          aria-label="Primary"
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex"
+        >
+          {h.nav.map((link) => (
+            <Anchor
+              key={`${link.label}-${link.url}`}
+              link={link}
+              className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:opacity-60 ${
+                open ? "text-white hover:text-volt hover:opacity-100" : "text-carbon"
+              }`}
+            />
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-4 sm:gap-5">
+          <AccountMenu dark={open} />
           <Anchor
             link={{ label: h.cta_label, url: h.cta_url }}
             className={`hidden rounded-full px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] transition sm:inline-flex ${
