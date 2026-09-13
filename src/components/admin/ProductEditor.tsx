@@ -158,17 +158,13 @@ export function ProductEditor({
           </select>
         </Field>
         <Field>
-          <span className={label}>Price (in cents)</span>
-          <input
-            type="number"
-            className={input}
-            value={draft.price_cents}
-            onChange={(e) => set("price_cents", Number(e.target.value) || 0)}
-          />
-        </Field>
-        <Field>
-          <span className={label}>Currency</span>
-          <input className={input} value={draft.currency} onChange={(e) => set("currency", e.target.value)} />
+          <span className={label}>Price (synced from Paddle)</span>
+          <div className={`${input} flex items-center justify-between bg-steel/30 text-ink/70`}>
+            <span>
+              {draft.currency} {(draft.price_cents / 100).toFixed(2)}
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">auto</span>
+          </div>
         </Field>
         <Field>
           <span className={label}>Paddle price ID</span>

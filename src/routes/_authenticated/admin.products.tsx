@@ -5,7 +5,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProductEditor, emptyProduct, type ProductDraft } from "@/components/admin/ProductEditor";
-import { adminDeleteProduct, adminListProducts, adminSaveProduct } from "@/lib/admin.functions";
+import {
+  adminDeleteProduct,
+  adminListProducts,
+  adminSaveProduct,
+  adminSyncPaddlePrices,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   component: AdminProducts,
@@ -44,6 +49,7 @@ function AdminProducts() {
   const list = useServerFn(adminListProducts);
   const save = useServerFn(adminSaveProduct);
   const remove = useServerFn(adminDeleteProduct);
+  const syncPaddle = useServerFn(adminSyncPaddlePrices);
   const [draft, setDraft] = useState<ProductDraft | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ["admin-products"], queryFn: () => list() });
@@ -67,21 +73,43 @@ function AdminProducts() {
     onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not delete"),
   });
 
+  const syncMutation = useMutation({
+    mutationFn: () => syncPaddle(),
+    onSuccess: (res: any) => {
+      const parts = [`${res.updated} price${res.updated === 1 ? "" : "s"} updated`];
+      if (res.missing?.length) parts.push(`${res.missing.length} not found in Paddle`);
+      if (res.unlinked?.length) parts.push(`${res.unlinked.length} without a Paddle price ID`);
+      toast.success(parts.join(" · "));
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+    },
+    onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not sync with Paddle"),
+  });
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-carbon">Products</h1>
           <p className="mt-1 text-sm text-ink/60">
-            Themes, templates, scripts, plugins and services. Published items appear on the storefront.
+            Themes, templates, scripts, plugins and services. Prices come straight from Paddle — press sync after
+            changing them there.
           </p>
         </div>
-        <button
-          onClick={() => setDraft({ ...emptyProduct })}
-          className="rounded-full bg-carbon px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-volt"
-        >
-          New product
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+            className="rounded-full border border-carbon px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-carbon disabled:opacity-50"
+          >
+            {syncMutation.isPending ? "Syncing…" : "Sync with Paddle"}
+          </button>
+          <button
+            onClick={() => setDraft({ ...emptyProduct })}
+            className="rounded-full bg-carbon px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-volt"
+          >
+            New product
+          </button>
+        </div>
       </div>
 
       {draft && (
