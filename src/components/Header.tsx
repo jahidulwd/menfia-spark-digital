@@ -102,12 +102,42 @@ function Anchor({ link, className }: { link: HeaderLink; className: string }) {
 export function Header() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [onDark, setOnDark] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   const fetchBranding = useServerFn(getBranding);
   const fetchHeader = useServerFn(getHeaderSettings);
   const { data: branding } = useQuery({ queryKey: ["branding"], queryFn: () => fetchBranding() });
   const { data: headerData } = useQuery({ queryKey: ["header-settings"], queryFn: () => fetchHeader() });
   const h = headerData ?? HEADER_DEFAULTS;
+
+  // Flip the header to its dark treatment whenever it sits over a dark surface.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const check = () => {
+      const rect = el.getBoundingClientRect();
+      let overDark = false;
+      document.querySelectorAll<HTMLElement>("[data-dark-surface]").forEach((surface) => {
+        const r = surface.getBoundingClientRect();
+        if (r.top <= rect.bottom + 2 && r.bottom >= rect.top - 2) overDark = true;
+      });
+      setOnDark(overDark);
+    };
+
+    check();
+    const settle = window.setTimeout(check, 350);
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.clearTimeout(settle);
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, []);
+
+  const dark = open || onDark;
 
   const name = branding?.site_name || "MENFIA DIGITAL";
   const logo = branding?.header_logo_url;
