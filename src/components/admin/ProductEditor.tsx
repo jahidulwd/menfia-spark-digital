@@ -170,13 +170,13 @@ export function ProductEditor({
           <span className={label}>Paddle price ID</span>
           <input
             className={input}
-            placeholder="pri_..."
+            placeholder="Leave empty — filled automatically on Sync"
             value={draft.paddle_price_id}
             onChange={(e) => set("paddle_price_id", e.target.value)}
           />
           {draft.paddle_price_id && !draft.paddle_price_id.trim().startsWith("pri_") ? (
             <span className="text-xs text-red-600">
-              Must start with "pri_" — copy it from Paddle → Catalog → Products → your product → Prices.
+              Leave empty and press Sync — it will be found automatically from a Paddle product with the same name.
             </span>
           ) : null}
         </Field>
