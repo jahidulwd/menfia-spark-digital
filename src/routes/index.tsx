@@ -77,6 +77,10 @@ function Index() {
   const { data } = useQuery({ queryKey: ["home-content"], queryFn: () => fetchHome() });
   const c = data ?? HOME_DEFAULTS;
 
+  const statValues = c.panel_stats.map((row) => Number(row.value.replace(/[^0-9.]/g, "")) || 0);
+  const maxStat = Math.max(1, ...statValues);
+  const totalStat = statValues.reduce((sum, n) => sum + n, 0).toLocaleString();
+
   return (
     <div className="min-h-screen bg-titan font-sans text-ink antialiased">
       {/* 01 HERO */}
@@ -214,7 +218,7 @@ function Index() {
       </section>
 
       {/* 02 NUMBERS BAND */}
-      <section className="border-b border-steel bg-carbon">
+      <section id="numbers" data-dark-surface className="border-b border-white/10 bg-carbon text-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
           {c.stats_band.map((stat) => (
             <div key={stat.label}>
