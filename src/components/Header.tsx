@@ -115,8 +115,11 @@ export function Header() {
 
   return (
     <header
+      ref={headerRef}
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
-        open ? "border-white/10 bg-carbon" : "border-steel bg-titan/85 backdrop-blur-sm"
+        dark ? "border-white/10" : "border-steel"
+      } ${
+        open ? "bg-carbon" : onDark ? "bg-carbon/85 backdrop-blur-md" : "bg-titan/85 backdrop-blur-sm"
       }`}
     >
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
@@ -124,7 +127,7 @@ export function Header() {
           {logo ? (
             <img src={logo} alt={name} style={{ height: `${logoHeight}px` }} className="w-auto" />
           ) : (
-            <p className={`text-base font-extrabold tracking-tight ${open ? "text-volt" : "text-carbon"}`}>{name}</p>
+            <p className={`text-base font-extrabold tracking-tight ${dark ? "text-volt" : "text-carbon"}`}>{name}</p>
           )}
         </Link>
 
@@ -137,14 +140,14 @@ export function Header() {
               key={`${link.label}-${link.url}`}
               link={link}
               className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] transition hover:opacity-60 ${
-                open ? "text-white hover:text-volt hover:opacity-100" : "text-carbon"
+                dark ? "text-white hover:text-volt hover:opacity-100" : "text-carbon"
               }`}
             />
           ))}
         </nav>
 
         <div className="flex items-center gap-4 sm:gap-5">
-          <AccountMenu dark={open} />
+          <AccountMenu dark={dark} />
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
@@ -153,7 +156,7 @@ export function Header() {
           >
             <span
               className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                open ? "text-volt" : "text-carbon"
+                dark ? "text-volt" : "text-carbon"
               }`}
             >
               {open ? h.close_label : h.menu_label}
@@ -163,7 +166,7 @@ export function Header() {
                 <span
                   key={top}
                   className={`absolute left-0 right-0 h-[2px] rounded-sm transition-all duration-300 ${
-                    open ? "bg-volt" : "bg-carbon"
+                    dark ? "bg-volt" : "bg-carbon"
                   }`}
                   style={{
                     top: open ? 8 : top,
