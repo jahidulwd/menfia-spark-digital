@@ -149,7 +149,7 @@ export function Header() {
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
         dark ? "border-white/10" : "border-steel"
       } ${
-        open ? "bg-carbon" : onDark ? "bg-carbon/85 backdrop-blur-md" : "bg-titan/85 backdrop-blur-sm"
+        open ? "bg-carbon" : onDark ? "bg-carbon/95 backdrop-blur-md" : "bg-titan/85 backdrop-blur-sm"
       }`}
     >
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
