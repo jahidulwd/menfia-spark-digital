@@ -271,17 +271,42 @@ export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
       if (price?.id && Number.isFinite(amount)) byId.set(String(price.id), { amount, currency });
     }
 
-    let query = supabase.from("products").select("id, title, price_cents, currency, paddle_price_id");
+    // Paddle products (by name) -> first active price, used to auto-fill price IDs
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const byName = new Map<string, string>();
+    const prodRes = await fetch(`${base}/products?per_page=200&status=active`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (prodRes.ok) {
+      const pp = ((await prodRes.json()) as { data?: any[] }).data ?? [];
+      const nameById = new Map<string, string>();
+      for (const p of pp) if (p?.id && p?.name) nameById.set(String(p.id), norm(String(p.name)));
+      for (const price of prices) {
+        const name = nameById.get(String(price?.product_id));
+        if (name && !byName.has(name)) byName.set(name, String(price.id));
+      }
+    }
+
+    let query = supabase.from("products").select("id, title, slug, price_cents, currency, paddle_price_id");
     if (input.productId) query = query.eq("id", input.productId);
     const { data: products } = await query;
 
     let updated = 0;
+    let linked = 0;
     const missing: string[] = [];
     const unlinked: string[] = [];
     const invalid: string[] = [];
 
     for (const product of products ?? []) {
-      const pid = product.paddle_price_id?.trim();
+      let pid = product.paddle_price_id?.trim() ?? "";
+      let autoLinked = false;
+      if (!pid.startsWith("pri_") || (!byId.has(pid) && byName.has(norm(product.title)))) {
+        const found = byName.get(norm(product.title)) ?? byName.get(norm(product.slug ?? ""));
+        if (found && found !== pid) {
+          pid = found;
+          autoLinked = true;
+        }
+      }
       if (!pid) {
         unlinked.push(product.title);
         continue;
@@ -305,16 +330,24 @@ export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
         missing.push(product.title);
         continue;
       }
-      if (match.amount !== product.price_cents || match.currency !== product.currency) {
+      if (autoLinked || match.amount !== product.price_cents || match.currency !== product.currency) {
         const { error } = await supabase
           .from("products")
-          .update({ price_cents: match.amount, currency: match.currency, updated_at: new Date().toISOString() })
+          .update({
+            price_cents: match.amount,
+            currency: match.currency,
+            paddle_price_id: pid,
+            updated_at: new Date().toISOString(),
+          })
           .eq("id", product.id);
-        if (!error) updated += 1;
+        if (!error) {
+          updated += 1;
+          if (autoLinked) linked += 1;
+        }
       }
     }
 
-    return { updated, missing, unlinked, invalid, pricesFound: byId.size };
+    return { updated, linked, missing, unlinked, invalid, pricesFound: byId.size };
   });
 
 export const adminListOrders = createServerFn({ method: "GET" })

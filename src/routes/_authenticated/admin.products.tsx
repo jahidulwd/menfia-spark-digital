@@ -77,9 +77,10 @@ function AdminProducts() {
     mutationFn: (productId?: string) => syncPaddle({ data: productId ? { productId } : {} }),
     onSuccess: (res: any) => {
       const parts = [`${res.updated} price${res.updated === 1 ? "" : "s"} updated`];
-      if (res.invalid?.length) parts.push(`${res.invalid.join(", ")}: Paddle price ID must start with "pri_"`);
-      if (res.missing?.length) parts.push(`${res.missing.join(", ")} not found in Paddle (check ID & sandbox/live mode)`);
-      if (res.unlinked?.length) parts.push(`${res.unlinked.length} without a Paddle price ID`);
+      if (res.linked) parts.push(`${res.linked} Paddle price ID${res.linked === 1 ? "" : "s"} auto-linked`);
+      if (res.invalid?.length) parts.push(`${res.invalid.join(", ")}: no Paddle product with the same name`);
+      if (res.missing?.length) parts.push(`${res.missing.join(", ")} not found in Paddle (check sandbox/live mode)`);
+      if (res.unlinked?.length) parts.push(`${res.unlinked.join(", ")}: no Paddle product with the same name`);
       const bad = res.invalid?.length || res.missing?.length;
       (bad ? toast.error : toast.success)(parts.join(" · "));
       qc.invalidateQueries({ queryKey: ["admin-products"] });
