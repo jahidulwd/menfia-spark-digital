@@ -108,7 +108,7 @@ function Index() {
                 </div>
               </Reveal>
 
-              <h1 className="text-[2.75rem] font-extrabold leading-[0.94] tracking-[-0.03em] text-white sm:text-6xl lg:text-[5rem]">
+              <h1 className="text-[2.75rem] font-extrabold leading-[1.02] tracking-[-0.03em] text-white sm:text-6xl lg:text-[4.75rem]">
                 <SplitHeading as="span" className="block">
                   {c.hero.title_line1}
                 </SplitHeading>
@@ -218,7 +218,7 @@ function Index() {
       </section>
 
       {/* 02 NUMBERS BAND */}
-      <section id="numbers" data-dark-surface className="border-b border-white/10 bg-carbon text-white">
+      <section id="numbers" data-dark-surface className="border-b border-volt/25 bg-carbon text-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
           {c.stats_band.map((stat) => (
             <div key={stat.label}>
