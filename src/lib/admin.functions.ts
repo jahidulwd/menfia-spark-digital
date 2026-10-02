@@ -314,7 +314,7 @@ export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
       }
     }
 
-    return { updated, missing, unlinked, pricesFound: byId.size };
+    return { updated, missing, unlinked, invalid, pricesFound: byId.size };
   });
 
 export const adminListOrders = createServerFn({ method: "GET" })

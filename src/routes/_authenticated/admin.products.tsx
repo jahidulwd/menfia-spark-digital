@@ -74,12 +74,14 @@ function AdminProducts() {
   });
 
   const syncMutation = useMutation({
-    mutationFn: () => syncPaddle(),
+    mutationFn: (productId?: string) => syncPaddle({ data: productId ? { productId } : {} }),
     onSuccess: (res: any) => {
       const parts = [`${res.updated} price${res.updated === 1 ? "" : "s"} updated`];
-      if (res.missing?.length) parts.push(`${res.missing.length} not found in Paddle`);
+      if (res.invalid?.length) parts.push(`${res.invalid.join(", ")}: Paddle price ID must start with "pri_"`);
+      if (res.missing?.length) parts.push(`${res.missing.join(", ")} not found in Paddle (check ID & sandbox/live mode)`);
       if (res.unlinked?.length) parts.push(`${res.unlinked.length} without a Paddle price ID`);
-      toast.success(parts.join(" · "));
+      const bad = res.invalid?.length || res.missing?.length;
+      (bad ? toast.error : toast.success)(parts.join(" · "));
       qc.invalidateQueries({ queryKey: ["admin-products"] });
     },
     onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not sync with Paddle"),
@@ -97,7 +99,7 @@ function AdminProducts() {
         </div>
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => syncMutation.mutate()}
+            onClick={() => syncMutation.mutate(undefined)}
             disabled={syncMutation.isPending}
             className="rounded-full border border-carbon px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-carbon disabled:opacity-50"
           >
@@ -174,7 +176,14 @@ function AdminProducts() {
                 <td className="px-4 py-3 font-mono text-[10px] uppercase text-ink/50">
                   {row.license_enabled ? row.license_period : "—"}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="whitespace-nowrap px-4 py-3 text-right">
+                  <button
+                    onClick={() => syncMutation.mutate(row.id)}
+                    disabled={syncMutation.isPending}
+                    className="mr-4 font-mono text-[10px] uppercase tracking-[0.12em] text-carbon hover:underline disabled:opacity-50"
+                  >
+                    Sync
+                  </button>
                   <button
                     onClick={() => setDraft(toDraft(row))}
                     className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/60 hover:text-carbon"
