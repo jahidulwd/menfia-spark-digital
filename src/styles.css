@@ -66,6 +66,9 @@
   --color-steel: var(--steel);
   --color-ink: var(--ink);
   --color-volt-dim: var(--volt-dim);
+  --color-carbon-deep: var(--carbon-deep);
+  --color-carbon-raise: var(--carbon-raise);
+  --color-hairline: var(--hairline);
 
   /* Typography */
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
@@ -116,6 +119,11 @@
   --volt-dim: oklch(0.7 0.18 120);
   --steel: oklch(0.87 0.01 245);
   --ink: oklch(0.25 0.02 270);
+
+  /* Dark hero surfaces */
+  --carbon-deep: oklch(0.09 0.012 264);
+  --carbon-raise: oklch(0.17 0.015 264);
+  --hairline: oklch(1 0 0 / 10%);
 }
 
 .dark {
