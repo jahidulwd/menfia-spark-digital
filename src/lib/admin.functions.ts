@@ -240,7 +240,8 @@ export const adminSavePaddleSettings = createServerFn({ method: "POST" })
 /** Pulls live prices from Paddle and updates every product linked to a Paddle price ID. */
 export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((data: { productId?: string } | undefined) => data ?? {})
+  .handler(async ({ context, data: input }) => {
     await assertAdmin(context as Ctx);
     const supabase = (context as Ctx).supabase;
 
@@ -270,20 +271,36 @@ export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
       if (price?.id && Number.isFinite(amount)) byId.set(String(price.id), { amount, currency });
     }
 
-    const { data: products } = await supabase
-      .from("products")
-      .select("id, title, price_cents, currency, paddle_price_id");
+    let query = supabase.from("products").select("id, title, price_cents, currency, paddle_price_id");
+    if (input.productId) query = query.eq("id", input.productId);
+    const { data: products } = await query;
 
     let updated = 0;
     const missing: string[] = [];
     const unlinked: string[] = [];
+    const invalid: string[] = [];
 
     for (const product of products ?? []) {
-      if (!product.paddle_price_id) {
+      const pid = product.paddle_price_id?.trim();
+      if (!pid) {
         unlinked.push(product.title);
         continue;
       }
-      const match = byId.get(product.paddle_price_id);
+      if (!pid.startsWith("pri_")) {
+        invalid.push(product.title);
+        continue;
+      }
+      let match = byId.get(pid);
+      if (!match) {
+        const one = await fetch(`${base}/prices/${encodeURIComponent(pid)}`, {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
+        if (one.ok) {
+          const p = ((await one.json()) as { data?: any }).data;
+          const amount = Number(p?.unit_price?.amount);
+          if (Number.isFinite(amount)) match = { amount, currency: String(p?.unit_price?.currency_code ?? "USD") };
+        }
+      }
       if (!match) {
         missing.push(product.title);
         continue;
@@ -297,7 +314,7 @@ export const adminSyncPaddlePrices = createServerFn({ method: "POST" })
       }
     }
 
-    return { updated, missing, unlinked, pricesFound: byId.size };
+    return { updated, missing, unlinked, invalid, pricesFound: byId.size };
   });
 
 export const adminListOrders = createServerFn({ method: "GET" })

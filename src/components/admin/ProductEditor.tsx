@@ -174,6 +174,11 @@ export function ProductEditor({
             value={draft.paddle_price_id}
             onChange={(e) => set("paddle_price_id", e.target.value)}
           />
+          {draft.paddle_price_id && !draft.paddle_price_id.trim().startsWith("pri_") ? (
+            <span className="text-xs text-red-600">
+              Must start with "pri_" — copy it from Paddle → Catalog → Products → your product → Prices.
+            </span>
+          ) : null}
         </Field>
         <Field>
           <span className={label}>Version</span>
