@@ -193,12 +193,11 @@
   mask-image: radial-gradient(120% 90% at 50% 0%, oklch(1 0 0 / 1) 20%, oklch(1 0 0 / 0.15) 75%, transparent 100%);
 }
 
-/* Layered glow + vignette for dark surfaces */
+/* Layered glow for dark surfaces */
 @utility hero-glow {
   background:
-    radial-gradient(70% 55% at 78% 4%, color-mix(in oklab, var(--volt) 22%, transparent), transparent 60%),
-    radial-gradient(55% 45% at 6% 88%, color-mix(in oklab, var(--volt) 10%, transparent), transparent 65%),
-    radial-gradient(130% 110% at 50% 0%, transparent 35%, oklch(0.07 0.01 264 / 0.92) 100%);
+    radial-gradient(65% 50% at 80% 2%, color-mix(in oklab, var(--volt) 20%, transparent), transparent 62%),
+    radial-gradient(50% 45% at 2% 90%, color-mix(in oklab, var(--volt) 9%, transparent), transparent 68%);
 }
 
 /* Fine film grain */

@@ -80,58 +80,135 @@ function Index() {
   return (
     <div className="min-h-screen bg-titan font-sans text-ink antialiased">
       {/* 01 HERO */}
-      <section className="grid-bg border-b border-steel">
-        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
-          <div className="flex flex-col gap-12 lg:flex-row lg:items-end">
-            <div className="flex-1">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-steel bg-white/60 px-4 py-1.5">
-                <span className="size-2 rounded-full bg-volt"></span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink/60">{c.hero.badge}</span>
-              </div>
-              <h1 className="text-5xl font-extrabold leading-[0.95] tracking-tight text-carbon sm:text-6xl lg:text-7xl">
+      <section data-dark-surface className="relative isolate overflow-hidden bg-carbon text-white">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <div className="hero-glow absolute inset-0" />
+          <div className="grid-bg-dark absolute inset-0" />
+          <div className="glow-drift absolute -top-40 right-[-6%] size-[520px] rounded-full bg-volt/10 blur-[120px]" />
+          <div className="hero-grain absolute inset-0 mix-blend-overlay" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-volt/45 to-transparent" />
+          <span className="absolute left-6 top-6 size-3 border-l border-t border-white/15 lg:left-10" />
+          <span className="absolute right-6 top-6 size-3 border-r border-t border-white/15 lg:right-10" />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 pt-16 lg:px-10 lg:pt-24">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <Reveal>
+                <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.04] px-4 py-1.5">
+                  <span className="relative flex size-2 items-center justify-center">
+                    <span className="absolute size-2 animate-ping rounded-full bg-volt/70" />
+                    <span className="relative size-2 rounded-full bg-volt" />
+                  </span>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/55">{c.hero.badge}</span>
+                </div>
+              </Reveal>
+
+              <h1 className="text-[2.75rem] font-extrabold leading-[0.94] tracking-[-0.03em] text-white sm:text-6xl lg:text-[5rem]">
                 <SplitHeading as="span" className="block">
                   {c.hero.title_line1}
                 </SplitHeading>
-                <SplitHeading as="span" className="block" delay={0.15}>
+                <SplitHeading as="span" className="block text-volt" delay={0.15}>
                   {c.hero.title_line2}
                 </SplitHeading>
               </h1>
+
               <Reveal delay={0.3}>
-                <p className="mt-6 max-w-md text-base leading-relaxed text-ink/60">{c.hero.subtitle}</p>
+                <p className="mt-7 max-w-xl text-base leading-relaxed text-white/55 sm:text-lg">{c.hero.subtitle}</p>
               </Reveal>
-              <Reveal delay={0.4} className="mt-8 flex flex-wrap gap-3">
+
+              <Reveal delay={0.4} className="mt-9 flex flex-wrap items-center gap-3">
                 <CtaLink
                   url={c.hero.primary_url}
-                  className="rounded-full bg-carbon px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-volt transition hover:opacity-90"
+                  className="group inline-flex items-center gap-3 rounded-full bg-volt px-7 py-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.15em] text-carbon transition hover:brightness-105"
                 >
                   {c.hero.primary_label}
+                  <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
                 </CtaLink>
                 <CtaLink
                   url={c.hero.secondary_url}
-                  className="rounded-full border border-steel bg-white/50 px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-ink/70 transition hover:border-carbon/30"
+                  className="inline-flex items-center rounded-full border border-white/15 px-7 py-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-white/75 transition hover:border-volt/60 hover:text-volt"
                 >
                   {c.hero.secondary_label}
                 </CtaLink>
               </Reveal>
+
+              <Reveal delay={0.5} className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6">
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+                  {String(services.length).padStart(2, "0")} service modules
+                </span>
+                <span aria-hidden className="size-1 rounded-full bg-volt/60" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+                  {String(projects.length).padStart(2, "0")} case studies
+                </span>
+                <span aria-hidden className="size-1 rounded-full bg-volt/60" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+                  {String(c.faq.items.length).padStart(2, "0")} answers
+                </span>
+              </Reveal>
             </div>
-            <Tilt3D className="w-full lg:w-80">
-              <div className="rounded-xl border border-steel bg-white/70 p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink/40">{c.panel_title}</span>
-                  <span className="h-px flex-1 mx-3 bg-steel"></span>
+
+            <Tilt3D className="w-full">
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-6 shadow-[0_40px_120px_-50px_oklch(0_0_0/1)] backdrop-blur-md sm:p-7">
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-volt/80">{c.panel_title}</span>
+                  <span aria-hidden className="h-px flex-1 bg-white/10" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">live</span>
                 </div>
-                <dl className="space-y-4">
-                  {c.panel_stats.map((row) => (
-                    <div key={row.label} className="flex items-start justify-between gap-4">
-                      <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink/50">{row.label}</dt>
-                      <dd className="text-right text-2xl font-extrabold text-carbon">
-                        <CountUp value={row.value} />
-                      </dd>
-                    </div>
-                  ))}
+
+                <dl className="space-y-5">
+                  {c.panel_stats.map((row, i) => {
+                    const value = Number(row.value.replace(/[^0-9.]/g, "")) || 0;
+                    const pct = Math.min(100, Math.round((value / maxStat) * 100));
+                    return (
+                      <div key={row.label}>
+                        <div className="flex items-end justify-between gap-4">
+                          <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/45">{row.label}</dt>
+                          <dd className="text-3xl font-extrabold leading-none tracking-tight text-white">
+                            <CountUp value={row.value} />
+                          </dd>
+                        </div>
+                        <div className="mt-2.5 h-[3px] w-full overflow-hidden rounded-full bg-white/10">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-volt-dim to-volt"
+                            style={{
+                              width: `${pct}%`,
+                              transition: `width 1.2s cubic-bezier(0.16,1,0.3,1) ${0.35 + i * 0.12}s`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </dl>
+
+                <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">tracked total</span>
+                  <span className="font-mono text-sm font-bold text-volt">{totalStat}</span>
+                </div>
               </div>
             </Tilt3D>
+          </div>
+
+          <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 py-5 lg:mt-20">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              {services.map((service) => (
+                <span key={service.slug} className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+                  {service.title}
+                </span>
+              ))}
+            </div>
+            <a
+              href="#numbers"
+              className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 transition hover:text-volt"
+            >
+              scroll
+              <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-y-0.5">
+                ↓
+              </span>
+            </a>
           </div>
         </div>
       </section>
