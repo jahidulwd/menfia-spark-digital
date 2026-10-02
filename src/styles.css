@@ -66,6 +66,9 @@
   --color-steel: var(--steel);
   --color-ink: var(--ink);
   --color-volt-dim: var(--volt-dim);
+  --color-carbon-deep: var(--carbon-deep);
+  --color-carbon-raise: var(--carbon-raise);
+  --color-hairline: var(--hairline);
 
   /* Typography */
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
@@ -116,6 +119,11 @@
   --volt-dim: oklch(0.7 0.18 120);
   --steel: oklch(0.87 0.01 245);
   --ink: oklch(0.25 0.02 270);
+
+  /* Dark hero surfaces */
+  --carbon-deep: oklch(0.09 0.012 264);
+  --carbon-raise: oklch(0.17 0.015 264);
+  --hairline: oklch(1 0 0 / 10%);
 }
 
 .dark {
@@ -174,4 +182,42 @@
     linear-gradient(to right, oklch(from var(--steel) l c h / 0.6) 1px, transparent 1px),
     linear-gradient(to bottom, oklch(from var(--steel) l c h / 0.6) 1px, transparent 1px);
   background-size: 48px 48px;
+}
+
+/* Dark blueprint grid used by the hero */
+@utility grid-bg-dark {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(120% 90% at 50% 0%, oklch(1 0 0 / 1) 20%, oklch(1 0 0 / 0.15) 75%, transparent 100%);
+}
+
+/* Layered glow for dark surfaces */
+@utility hero-glow {
+  background:
+    radial-gradient(65% 50% at 80% 2%, color-mix(in oklab, var(--volt) 20%, transparent), transparent 62%),
+    radial-gradient(50% 45% at 2% 90%, color-mix(in oklab, var(--volt) 9%, transparent), transparent 68%);
+}
+
+/* Fine film grain */
+@utility hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  opacity: 0.05;
+}
+
+@utility glow-drift {
+  animation: glow-drift 18s ease-in-out infinite;
+}
+
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(-2%, 3%, 0) scale(1.07);
+    opacity: 1;
+  }
 }

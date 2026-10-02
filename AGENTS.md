@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Structure
+
+- Any full-bleed dark section must carry `data-dark-surface`; the sticky header probes those elements to flip itself to its dark treatment. Keeps nav legible over dark bands without hardcoding page-specific logic in the header.
