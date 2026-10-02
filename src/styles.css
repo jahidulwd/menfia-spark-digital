@@ -183,3 +183,42 @@
     linear-gradient(to bottom, oklch(from var(--steel) l c h / 0.6) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* Dark blueprint grid used by the hero */
+@utility grid-bg-dark {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(120% 90% at 50% 0%, oklch(1 0 0 / 1) 20%, oklch(1 0 0 / 0.15) 75%, transparent 100%);
+}
+
+/* Layered glow + vignette for dark surfaces */
+@utility hero-glow {
+  background:
+    radial-gradient(70% 55% at 78% 4%, color-mix(in oklab, var(--volt) 22%, transparent), transparent 60%),
+    radial-gradient(55% 45% at 6% 88%, color-mix(in oklab, var(--volt) 10%, transparent), transparent 65%),
+    radial-gradient(130% 110% at 50% 0%, transparent 35%, oklch(0.07 0.01 264 / 0.92) 100%);
+}
+
+/* Fine film grain */
+@utility hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  opacity: 0.05;
+}
+
+@utility glow-drift {
+  animation: glow-drift 18s ease-in-out infinite;
+}
+
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(-2%, 3%, 0) scale(1.07);
+    opacity: 1;
+  }
+}
