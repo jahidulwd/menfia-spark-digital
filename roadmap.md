@@ -1,3 +1,3 @@
 
 - [x] Header: focused main navigation with account access — all editable from backend
-- [ ] Add eight supplied projects to Recent Builds with complete case-study pages
+- [x] Add eight supplied projects to Recent Builds with complete case-study pages

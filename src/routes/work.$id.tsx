@@ -57,7 +57,11 @@ function ProjectDetail() {
   const project = getProjectBySlug(id);
   if (!project) throw notFound();
 
-  const others = projects.filter((p) => p.slug !== project.slug);
+  const currentIndex = projects.findIndex((p) => p.slug === project.slug);
+  const others = [
+    projects[(currentIndex + 1) % projects.length],
+    projects[(currentIndex + 2) % projects.length],
+  ].filter((item): item is (typeof projects)[number] => Boolean(item));
 
   return (
     <main className="min-h-screen bg-titan">
@@ -229,7 +233,7 @@ function ProjectDetail() {
       </section>
 
       {/* 05 — Build */}
-      <section className="border-b border-steel bg-carbon">
+      <section data-dark-surface className="border-b border-steel bg-carbon">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
@@ -390,7 +394,7 @@ function ProjectDetail() {
       </section>
 
       {/* CTA */}
-      <section className="bg-carbon">
+      <section data-dark-surface className="bg-carbon">
         <div className="mx-auto max-w-7xl px-6 py-20 text-center lg:px-10">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">
             / start a build
