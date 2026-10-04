@@ -212,12 +212,14 @@ export function Header() {
 
       <div
         id="header-panel"
-        className={`bg-carbon transition-[max-height] duration-500 ease-in-out ${
-          open ? "overflow-y-auto overscroll-contain" : "overflow-hidden"
+        className={`absolute right-0 top-full w-full max-w-[30rem] border-b border-l border-white/10 bg-carbon shadow-2xl transition-all duration-500 ease-out ${
+          open
+            ? "visible translate-y-0 overflow-y-auto overscroll-contain opacity-100"
+            : "invisible -translate-y-3 overflow-hidden opacity-0 pointer-events-none"
         }`}
-        style={{ maxHeight: open ? "calc(100dvh - 73px)" : 0 }}
+        style={{ maxHeight: "calc(100dvh - 73px)" }}
       >
-        <div className="mx-auto max-w-7xl px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-2 lg:px-10">
+        <div className="px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-2 sm:px-8">
           <nav aria-label="Primary" className="flex flex-col pt-2">
             {h.nav.map((link) => (
               <a
