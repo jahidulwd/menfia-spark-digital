@@ -212,17 +212,19 @@ export function Header() {
 
       <div
         id="header-panel"
-        className="overflow-hidden bg-carbon transition-[max-height] duration-500 ease-in-out"
-        style={{ maxHeight: open ? "min(90vh, 480px)" : 0 }}
+        className={`bg-carbon transition-[max-height] duration-500 ease-in-out ${
+          open ? "overflow-y-auto overscroll-contain" : "overflow-hidden"
+        }`}
+        style={{ maxHeight: open ? "calc(100dvh - 73px)" : 0 }}
       >
-        <div className="mx-auto max-w-7xl px-6 pb-10 pt-2 lg:px-10">
+        <div className="mx-auto max-w-7xl px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-2 lg:px-10">
           <nav aria-label="Primary" className="flex flex-col pt-2">
             {h.nav.map((link) => (
               <a
                 key={`${link.label}-${link.url}`}
                 href={link.url || "#"}
                 onClick={() => setOpen(false)}
-                className="border-b border-white/15 py-3 text-2xl font-extrabold tracking-tight text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
+                className="break-words border-b border-white/15 py-3 text-2xl font-extrabold leading-[1.25] tracking-normal text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
               >
                 {link.label}
               </a>
@@ -231,7 +233,7 @@ export function Header() {
               <Link
                 to="/downloads"
                 onClick={() => setOpen(false)}
-                className="border-b border-white/15 py-3 text-2xl font-extrabold tracking-tight text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
+                className="break-words border-b border-white/15 py-3 text-2xl font-extrabold leading-[1.25] tracking-normal text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
               >
                 My account
               </Link>
@@ -239,7 +241,7 @@ export function Header() {
               <Link
                 to="/auth"
                 onClick={() => setOpen(false)}
-                className="border-b border-white/15 py-3 text-2xl font-extrabold tracking-tight text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
+                className="break-words border-b border-white/15 py-3 text-2xl font-extrabold leading-[1.25] tracking-normal text-white transition hover:pl-2 hover:text-volt sm:text-3xl"
               >
                 Sign in
               </Link>
