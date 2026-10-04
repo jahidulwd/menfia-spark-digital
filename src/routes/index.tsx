@@ -54,7 +54,7 @@ function CtaLink({ url, children, className }: { url: string; children: React.Re
 function Faq({ items }: { items: { q: string; a: string }[] }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="divide-y divide-steel border-y border-steel">
+    <div className="divide-y divide-white/10 border-y border-white/10">
       {items.map((item, i) => (
         <div key={`${item.q}-${i}`}>
           <button
@@ -62,10 +62,10 @@ function Faq({ items }: { items: { q: string; a: string }[] }) {
             aria-expanded={open === i}
             className="flex w-full items-start justify-between gap-6 py-6 text-left"
           >
-            <span className="text-lg font-bold tracking-tight text-carbon">{item.q}</span>
-            <span className="mt-1 shrink-0 font-mono text-sm text-volt-dim">{open === i ? "—" : "+"}</span>
+            <span className="text-lg font-bold tracking-tight text-white">{item.q}</span>
+            <span className="mt-1 shrink-0 font-mono text-sm text-volt">{open === i ? "—" : "+"}</span>
           </button>
-          {open === i && <p className="max-w-3xl pb-7 text-sm leading-relaxed text-ink/60">{item.a}</p>}
+          {open === i && <p className="max-w-3xl pb-7 text-sm leading-relaxed text-white/55">{item.a}</p>}
         </div>
       ))}
     </div>
@@ -82,7 +82,7 @@ function Index() {
   const totalStat = statValues.reduce((sum, n) => sum + n, 0).toLocaleString();
 
   return (
-    <div className="min-h-screen bg-titan font-sans text-ink antialiased">
+    <div data-dark-surface className="min-h-screen bg-carbon font-sans text-white antialiased">
       {/* 01 HERO */}
       <section data-dark-surface className="relative isolate overflow-hidden bg-carbon text-white">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
@@ -233,17 +233,17 @@ function Index() {
       </section>
 
       {/* 03 SERVICES */}
-      <section id="services" className="border-b border-steel">
+      <section id="services" className="border-b border-white/10 bg-carbon">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
           <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">{c.services.eyebrow}</p>
-              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">{c.services.eyebrow}</p>
+              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                 {c.services.title}
               </SplitHeading>
-              {c.services.intro && <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/60">{c.services.intro}</p>}
+              {c.services.intro && <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">{c.services.intro}</p>}
             </div>
-            <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-ink/40">
+            <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/35">
               {String(services.length).padStart(2, "0")} modules
             </span>
           </div>
@@ -253,30 +253,30 @@ function Index() {
                 key={service.id}
                 to="/services/$id"
                 params={{ id: service.slug }}
-                className={`group block rounded-xl border border-steel p-7 transition hover:border-carbon/30 ${
-                  service.featured ? "bg-carbon hover:opacity-95" : "bg-white/70"
+                className={`group block rounded-xl border p-7 transition ${
+                  service.featured ? "border-volt/30 bg-volt/[0.07] hover:border-volt/60" : "border-white/10 bg-carbon-raise/60 hover:border-white/25"
                 }`}
               >
-                <span className={`font-mono text-[11px] ${service.featured ? "text-volt/60" : "text-ink/30"}`}>
+                  <span className={`font-mono text-[11px] ${service.featured ? "text-volt/70" : "text-white/30"}`}>
                   {service.id}
                 </span>
                 <h3
                   className={`mt-6 text-2xl font-extrabold tracking-tight ${
-                    service.featured ? "text-volt" : "text-carbon"
+                    service.featured ? "text-volt" : "text-white"
                   }`}
                 >
                   {service.title}
                 </h3>
                 <p
                   className={`mt-3 max-w-sm text-sm leading-relaxed ${
-                    service.featured ? "text-white/60" : "text-ink/60"
+                    service.featured ? "text-white/65" : "text-white/50"
                   }`}
                 >
                   {service.description}
                 </p>
                 <span
                   className={`mt-6 inline-block font-mono text-[11px] uppercase tracking-[0.15em] ${
-                    service.featured ? "text-volt/70 group-hover:text-volt" : "text-ink/50 group-hover:text-carbon"
+                    service.featured ? "text-volt/70 group-hover:text-volt" : "text-white/45 group-hover:text-volt"
                   }`}
                 >
                   / explore
@@ -286,7 +286,7 @@ function Index() {
                     <span
                       key={tag}
                       className={`rounded-sm px-2 py-1 font-mono text-[11px] uppercase tracking-wider ${
-                        service.featured ? "bg-white/10 text-steel" : "bg-steel/20 text-ink/50"
+                        service.featured ? "bg-volt/10 text-volt/70" : "bg-white/[0.06] text-white/45"
                       }`}
                     >
                       {tag}
@@ -300,15 +300,15 @@ function Index() {
       </section>
 
       {/* 04 WORK */}
-      <section id="work" className="border-b border-steel bg-white/40">
+      <section id="work" className="border-b border-white/10 bg-carbon-deep">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
           <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">{c.work.eyebrow}</p>
-              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">{c.work.eyebrow}</p>
+              <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                 {c.work.title}
               </SplitHeading>
-              {c.work.intro && <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/60">{c.work.intro}</p>}
+              {c.work.intro && <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">{c.work.intro}</p>}
             </div>
           </div>
           <Reveal stagger={0.14} className="grid gap-6 md:grid-cols-3">
@@ -317,7 +317,7 @@ function Index() {
                 <Link
                   to="/work/$id"
                   params={{ id: project.slug }}
-                  className="block overflow-hidden rounded-xl border border-steel"
+                  className="block overflow-hidden rounded-xl border border-white/10 bg-carbon-raise"
                 >
                   <img
                     src={project.image}
@@ -332,15 +332,15 @@ function Index() {
                   <Link
                     to="/work/$id"
                     params={{ id: project.slug }}
-                    className="text-lg font-bold tracking-tight text-carbon hover:underline"
+                    className="text-lg font-bold tracking-tight text-white hover:text-volt"
                   >
                     {project.title}
                   </Link>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                     {project.category}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-ink/50">{project.description}</p>
+                <p className="mt-1 text-sm text-white/45">{project.description}</p>
               </article>
             ))}
           </Reveal>
@@ -348,18 +348,18 @@ function Index() {
       </section>
 
       {/* 05 PROCESS */}
-      <section id="process" className="border-b border-steel">
+      <section id="process" className="border-b border-white/10 bg-carbon">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">{c.process.eyebrow}</p>
-          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">{c.process.eyebrow}</p>
+          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             {c.process.title}
           </SplitHeading>
-          <Reveal stagger={0.1} className="mt-10 grid gap-px overflow-hidden rounded-xl border border-steel bg-steel md:grid-cols-2 lg:grid-cols-3">
+          <Reveal stagger={0.1} className="mt-10 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3">
             {c.process.steps.map((step, i) => (
-              <div key={`${step.title}-${i}`} className="bg-titan p-7">
-                <span className="font-mono text-[11px] text-ink/30">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-4 text-xl font-extrabold tracking-tight text-carbon">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink/60">{step.body}</p>
+              <div key={`${step.title}-${i}`} className="bg-carbon-raise p-7">
+                <span className="font-mono text-[11px] text-volt/55">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-4 text-xl font-extrabold tracking-tight text-white">{step.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/50">{step.body}</p>
               </div>
             ))}
           </Reveal>
@@ -367,19 +367,19 @@ function Index() {
       </section>
 
       {/* 06 TESTIMONIALS */}
-      <section id="clients" className="border-b border-steel bg-white/40">
+      <section id="clients" className="border-b border-white/10 bg-carbon-deep">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">{c.testimonials.eyebrow}</p>
-          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">{c.testimonials.eyebrow}</p>
+          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             {c.testimonials.title}
           </SplitHeading>
           <Reveal stagger={0.12} className="mt-10 grid gap-5 md:grid-cols-3">
             {c.testimonials.items.map((item, i) => (
-              <figure key={`${item.name}-${i}`} className="rounded-xl border border-steel bg-white/70 p-7">
-                <blockquote className="text-base leading-relaxed text-carbon">“{item.quote}”</blockquote>
+              <figure key={`${item.name}-${i}`} className="rounded-xl border border-white/10 bg-carbon-raise/70 p-7">
+                <blockquote className="text-base leading-relaxed text-white/80">“{item.quote}”</blockquote>
                 <figcaption className="mt-6">
-                  <p className="text-sm font-bold text-carbon">{item.name}</p>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">{item.role}</p>
+                  <p className="text-sm font-bold text-white">{item.name}</p>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">{item.role}</p>
                 </figcaption>
               </figure>
             ))}
@@ -388,10 +388,10 @@ function Index() {
       </section>
 
       {/* 07 FAQ */}
-      <section id="faq" className="border-b border-steel">
+      <section id="faq" className="border-b border-white/10 bg-carbon">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt-dim">{c.faq.eyebrow}</p>
-          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-carbon sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-volt">{c.faq.eyebrow}</p>
+          <SplitHeading className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             {c.faq.title}
           </SplitHeading>
           <div className="mt-10">
@@ -401,7 +401,7 @@ function Index() {
       </section>
 
       {/* 08 CTA + FOOTER */}
-      <section id="contact" className="bg-carbon">
+      <section id="contact" className="bg-carbon-deep">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
