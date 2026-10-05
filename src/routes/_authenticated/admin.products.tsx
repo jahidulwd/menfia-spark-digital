@@ -76,13 +76,11 @@ function AdminProducts() {
   const syncMutation = useMutation({
     mutationFn: (productId?: string) => syncPaddle({ data: productId ? { productId } : {} }),
     onSuccess: (res: any) => {
-      const parts = [`${res.updated} price${res.updated === 1 ? "" : "s"} updated`];
-      if (res.linked) parts.push(`${res.linked} Paddle price ID${res.linked === 1 ? "" : "s"} auto-linked`);
-      if (res.invalid?.length) parts.push(`${res.invalid.join(", ")}: no Paddle product with the same name`);
-      if (res.missing?.length) parts.push(`${res.missing.join(", ")} not found in Paddle (check sandbox/live mode)`);
-      if (res.unlinked?.length) parts.push(`${res.unlinked.join(", ")}: no Paddle product with the same name`);
-      const bad = res.invalid?.length || res.missing?.length;
-      (bad ? toast.error : toast.success)(parts.join(" · "));
+      const parts = [`${res.updated} price${res.updated === 1 ? "" : "s"} synced to Paddle`];
+      if (res.created) parts.push(`${res.created} Paddle product${res.created === 1 ? "" : "s"} created`);
+      if (res.linked) parts.push(`${res.linked} existing product${res.linked === 1 ? "" : "s"} linked automatically`);
+      if (res.failed?.length) parts.push(res.failed.join(" · "));
+      (res.failed?.length ? toast.error : toast.success)(parts.join(" · "));
       qc.invalidateQueries({ queryKey: ["admin-products"] });
     },
     onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not sync with Paddle"),
@@ -94,8 +92,7 @@ function AdminProducts() {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-carbon">Products</h1>
           <p className="mt-1 text-sm text-ink/60">
-            Themes, templates, scripts, plugins and services. Prices come straight from Paddle — press sync after
-            changing them there.
+            Set the price here, save the product, then press Sync. Paddle products, price IDs and checkout prices are handled automatically.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
