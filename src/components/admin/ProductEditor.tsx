@@ -158,27 +158,24 @@ export function ProductEditor({
           </select>
         </Field>
         <Field>
-          <span className={label}>Price (synced from Paddle)</span>
-          <div className={`${input} flex items-center justify-between bg-steel/30 text-ink/70`}>
-            <span>
-              {draft.currency} {(draft.price_cents / 100).toFixed(2)}
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">auto</span>
+          <span className={label}>Price</span>
+          <div className="grid grid-cols-[6rem_1fr] gap-2">
+            <select className={input} value={draft.currency} onChange={(e) => set("currency", e.target.value)}>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              className={input}
+              value={(draft.price_cents / 100).toFixed(2)}
+              onChange={(e) => set("price_cents", Math.round((Number(e.target.value) || 0) * 100))}
+              aria-label="Product price"
+            />
           </div>
-        </Field>
-        <Field>
-          <span className={label}>Paddle price ID</span>
-          <input
-            className={input}
-            placeholder="Leave empty — filled automatically on Sync"
-            value={draft.paddle_price_id}
-            onChange={(e) => set("paddle_price_id", e.target.value)}
-          />
-          {draft.paddle_price_id && !draft.paddle_price_id.trim().startsWith("pri_") ? (
-            <span className="text-xs text-red-600">
-              Leave empty and press Sync — it will be found automatically from a Paddle product with the same name.
-            </span>
-          ) : null}
+          <span className="mt-2 block text-xs text-ink/50">Save, then press Sync to update Paddle automatically.</span>
         </Field>
         <Field>
           <span className={label}>Version</span>

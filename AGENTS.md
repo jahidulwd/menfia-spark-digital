@@ -12,3 +12,4 @@
 ## Structure
 
 - Any full-bleed dark section must carry `data-dark-surface`; the sticky header probes those elements to flip itself to its dark treatment. Keeps nav legible over dark bands without hardcoding page-specific logic in the header.
+- Product prices are authored locally and pushed to automatically matched or created Paddle catalog records; Paddle IDs remain internal. Keeps product administration free of provider-specific identifiers.
