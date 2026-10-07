@@ -286,7 +286,7 @@ export const adminCheckPaddleConnection = createServerFn({ method: "POST" })
 
 type PaddleListResponse<T> = {
   data?: T[];
-  meta?: { pagination?: { next?: string | null } };
+  meta?: { pagination?: { next?: string | null; has_more?: boolean } };
 };
 
 async function paddleRequest<T>(url: string, apiKey: string, init?: RequestInit): Promise<T> {
@@ -309,11 +309,13 @@ async function paddleRequest<T>(url: string, apiKey: string, init?: RequestInit)
 async function paddleListAll<T>(url: string, apiKey: string): Promise<T[]> {
   const rows: T[] = [];
   let next: string | null = url;
-  while (next) {
+  let guard = 0;
+  while (next && guard++ < 50) {
     const page: PaddleListResponse<T> = await paddleRequest<PaddleListResponse<T>>(next, apiKey);
     rows.push(...(page.data ?? []));
     const nextUrl: string | null | undefined = page.meta?.pagination?.next;
-    next = nextUrl || null;
+    // Paddle always returns a `next` URL; only follow it when more pages exist.
+    next = page.meta?.pagination?.has_more && nextUrl ? nextUrl : null;
   }
   return rows;
 }
