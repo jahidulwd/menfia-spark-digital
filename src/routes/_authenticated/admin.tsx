@@ -22,6 +22,7 @@ const groups = [
       { to: "/admin/orders", label: "Orders" },
       { to: "/admin/licenses", label: "Licences" },
       { to: "/admin/settings", label: "Paddle" },
+      { to: "/admin/security", label: "Login security" },
     ],
   },
   {

@@ -35,6 +35,7 @@ import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminPagesRouteImport } from './routes/_authenticated/admin.pages'
 import { Route as AuthenticatedAdminPingRouteImport } from './routes/_authenticated/admin.ping'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
+import { Route as AuthenticatedAdminSecurityRouteImport } from './routes/_authenticated/admin.security'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as ApiPublicKeepaliveRouteImport } from './routes/api/public/keepalive'
 import { Route as ApiPublicPaddleWebhookRouteImport } from './routes/api/public/paddle-webhook'
@@ -177,6 +178,12 @@ const AuthenticatedAdminProductsRoute =
     path: '/products',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSecurityRoute =
+  AuthenticatedAdminSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSettingsRoute =
   AuthenticatedAdminSettingsRouteImport.update({
     id: '/settings',
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/ping': typeof AuthenticatedAdminPingRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
@@ -254,6 +262,7 @@ export interface FileRoutesByTo {
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/ping': typeof AuthenticatedAdminPingRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/_authenticated/admin/ping': typeof AuthenticatedAdminPingRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/_authenticated/admin/security': typeof AuthenticatedAdminSecurityRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/keepalive': typeof ApiPublicKeepaliveRoute
   '/api/public/paddle-webhook': typeof ApiPublicPaddleWebhookRoute
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/admin/pages'
     | '/admin/ping'
     | '/admin/products'
+    | '/admin/security'
     | '/admin/settings'
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/admin/pages'
     | '/admin/ping'
     | '/admin/products'
+    | '/admin/security'
     | '/admin/settings'
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
@@ -382,6 +394,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pages'
     | '/_authenticated/admin/ping'
     | '/_authenticated/admin/products'
+    | '/_authenticated/admin/security'
     | '/_authenticated/admin/settings'
     | '/api/public/keepalive'
     | '/api/public/paddle-webhook'
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/security': {
+      id: '/_authenticated/admin/security'
+      path: '/security'
+      fullPath: '/admin/security'
+      preLoaderRoute: typeof AuthenticatedAdminSecurityRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/settings': {
       id: '/_authenticated/admin/settings'
       path: '/settings'
@@ -633,6 +653,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminPagesRoute: typeof AuthenticatedAdminPagesRoute
   AuthenticatedAdminPingRoute: typeof AuthenticatedAdminPingRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
+  AuthenticatedAdminSecurityRoute: typeof AuthenticatedAdminSecurityRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -648,6 +669,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPagesRoute: AuthenticatedAdminPagesRoute,
   AuthenticatedAdminPingRoute: AuthenticatedAdminPingRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
+  AuthenticatedAdminSecurityRoute: AuthenticatedAdminSecurityRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
