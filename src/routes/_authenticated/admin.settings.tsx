@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { adminGetPaddleSettings, adminSavePaddleSettings } from "@/lib/admin.functions";
+import { adminCheckPaddleConnection, adminGetPaddleSettings, adminSavePaddleSettings } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: AdminSettings,
@@ -36,6 +36,13 @@ function AdminSettings() {
     mutationFn: (payload: Settings) => save({ data: payload }),
     onSuccess: () => toast.success("Paddle settings saved"),
     onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not save"),
+  });
+
+  const checkFn = useServerFn(adminCheckPaddleConnection);
+  const check = useMutation({
+    mutationFn: (payload: Settings) => checkFn({ data: payload }),
+    onSuccess: (res) => (res.connected ? toast.success : toast.error)(res.connected ? "Paddle connected" : "Paddle connection has problems"),
+    onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not check"),
   });
 
   const webhookUrl = typeof window !== "undefined" ? `${window.location.origin}/api/public/paddle-webhook` : "";
@@ -107,13 +114,39 @@ function AdminSettings() {
             </p>
           </div>
 
-          <button
-            onClick={() => mutation.mutate(form)}
-            disabled={mutation.isPending}
-            className="mt-6 rounded-full bg-volt px-6 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-carbon disabled:opacity-60"
-          >
-            {mutation.isPending ? "Saving…" : "Save settings"}
-          </button>
+          {check.data && (
+            <div
+              className={`mt-6 rounded-lg border p-4 ${check.data.connected ? "border-volt-dim bg-volt/10" : "border-red-300 bg-red-50"}`}
+            >
+              <p className="text-sm font-semibold text-carbon">
+                {check.data.connected ? "✓ Paddle is connected" : "✕ Paddle is not fully connected"}
+              </p>
+              <ul className="mt-2 space-y-1 text-xs">
+                {check.data.checks.map((c) => (
+                  <li key={c.label} className={c.ok ? "text-ink/70" : "text-red-600"}>
+                    {c.ok ? "✓" : "✕"} <strong>{c.label}:</strong> {c.detail}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              onClick={() => mutation.mutate(form)}
+              disabled={mutation.isPending}
+              className="rounded-full bg-volt px-6 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-carbon disabled:opacity-60"
+            >
+              {mutation.isPending ? "Saving…" : "Save settings"}
+            </button>
+            <button
+              onClick={() => check.mutate(form)}
+              disabled={check.isPending}
+              className="rounded-full border border-carbon px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-carbon disabled:opacity-60"
+            >
+              {check.isPending ? "Checking…" : "Check connection"}
+            </button>
+          </div>
         </div>
       )}
     </div>
