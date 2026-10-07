@@ -238,6 +238,52 @@ export const adminSavePaddleSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Tests the given Paddle credentials against the Paddle API without saving them. */
+export const adminCheckPaddleConnection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => paddleSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as Ctx);
+    const checks: { label: string; ok: boolean; detail: string }[] = [];
+    const env = data.environment;
+    const token = data.client_token;
+    const tokenPrefix = env === "production" ? "live_" : "test_";
+    checks.push({
+      label: "Client-side token",
+      ok: token.startsWith(tokenPrefix),
+      detail: !token
+        ? "Missing — checkout cannot open."
+        : token.startsWith(tokenPrefix)
+          ? `Looks right for ${env}.`
+          : `Should start with "${tokenPrefix}" for ${env} mode.`,
+    });
+    checks.push({
+      label: "Webhook secret",
+      ok: Boolean(data.webhook_secret),
+      detail: data.webhook_secret ? "Added." : "Missing — paid orders won't be confirmed automatically.",
+    });
+    if (!data.api_key) {
+      checks.push({ label: "API key", ok: false, detail: "Missing — Sync cannot reach Paddle." });
+    } else {
+      const base = env === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
+      try {
+        const res = await paddleRequest<{ data?: unknown[] }>(`${base}/products?per_page=1`, data.api_key);
+        checks.push({
+          label: "API key",
+          ok: true,
+          detail: `Connected to Paddle ${env}. Products readable${res.data ? "" : ""}.`,
+        });
+      } catch (error) {
+        checks.push({
+          label: "API key",
+          ok: false,
+          detail: `${error instanceof Error ? error.message : "Failed"} — make sure the key is from Paddle ${env}.`,
+        });
+      }
+    }
+    return { connected: checks.every((c) => c.ok), checks };
+  });
+
 type PaddleListResponse<T> = {
   data?: T[];
   meta?: { pagination?: { next?: string | null } };
