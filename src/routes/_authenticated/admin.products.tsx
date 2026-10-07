@@ -73,6 +73,7 @@ function AdminProducts() {
     onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not delete"),
   });
 
+  const [syncResult, setSyncResult] = useState<{ ok: boolean; lines: string[]; at: string } | null>(null);
   const syncMutation = useMutation({
     mutationFn: (productId?: string) => syncPaddle({ data: productId ? { productId } : {} }),
     onSuccess: (res: any) => {
@@ -81,9 +82,18 @@ function AdminProducts() {
       if (res.linked) parts.push(`${res.linked} existing product${res.linked === 1 ? "" : "s"} linked automatically`);
       if (res.failed?.length) parts.push(res.failed.join(" · "));
       (res.failed?.length ? toast.error : toast.success)(parts.join(" · "));
+      setSyncResult({
+        ok: !res.failed?.length,
+        lines: [...parts.filter((p) => !res.failed?.includes(p) && p !== res.failed?.join(" · ")), ...(res.failed ?? [])],
+        at: new Date().toLocaleTimeString(),
+      });
       qc.invalidateQueries({ queryKey: ["admin-products"] });
     },
-    onError: (err: unknown) => toast.error(err instanceof Error ? err.message : "Could not sync with Paddle"),
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "Could not sync with Paddle";
+      toast.error(msg);
+      setSyncResult({ ok: false, lines: [msg], at: new Date().toLocaleTimeString() });
+    },
   });
 
   return (
@@ -112,6 +122,22 @@ function AdminProducts() {
         </div>
       </div>
 
+      {syncResult && (
+        <div
+          className={`mt-6 rounded-xl border p-4 text-sm ${syncResult.ok ? "border-volt-dim bg-volt/10 text-carbon" : "border-red-300 bg-red-50 text-red-700"}`}
+        >
+          <p className="font-semibold">
+            {syncResult.ok ? "✓ Sync successful" : "✕ Sync had problems"}{" "}
+            <span className="font-normal text-ink/50">at {syncResult.at}</span>
+          </p>
+          <ul className="mt-1 list-disc pl-5 text-xs">
+            {syncResult.lines.map((l) => (
+              <li key={l}>{l}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {draft && (
         <div className="mt-6">
           <ProductEditor
@@ -134,20 +160,21 @@ function AdminProducts() {
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">File</th>
               <th className="px-4 py-3">Licence</th>
+              <th className="px-4 py-3">Paddle</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {isLoading && (
               <tr>
-                <td className="px-4 py-6 text-ink/50" colSpan={7}>
+                <td className="px-4 py-6 text-ink/50" colSpan={8}>
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && (data ?? []).length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-ink/50" colSpan={7}>
+                <td className="px-4 py-6 text-ink/50" colSpan={8}>
                   No products yet — create your first one.
                 </td>
               </tr>
@@ -173,6 +200,13 @@ function AdminProducts() {
                 </td>
                 <td className="px-4 py-3 font-mono text-[10px] uppercase text-ink/50">
                   {row.license_enabled ? row.license_period : "—"}
+                </td>
+                <td className="px-4 py-3">
+                  {String(row.paddle_price_id ?? "").startsWith("pri_") ? (
+                    <span className="rounded-full bg-volt px-2 py-1 font-mono text-[10px] uppercase text-carbon">✓ Synced</span>
+                  ) : (
+                    <span className="rounded-full bg-steel px-2 py-1 font-mono text-[10px] uppercase text-ink/60">Not synced</span>
+                  )}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
                   <button
