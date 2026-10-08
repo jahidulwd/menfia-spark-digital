@@ -71,7 +71,10 @@ function AuthPage() {
         "error-callback": () => setToken(""),
       });
     };
-    if (window.turnstile) return render();
+    if (window.turnstile) {
+      render();
+      return;
+    }
     const script = document.createElement("script");
     script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
     script.async = true;
