@@ -23,6 +23,7 @@ const groups = [
       { to: "/admin/licenses", label: "Licences" },
       { to: "/admin/settings", label: "Paddle" },
       { to: "/admin/security", label: "Login security" },
+      { to: "/admin/email", label: "Email" },
     ],
   },
   {
