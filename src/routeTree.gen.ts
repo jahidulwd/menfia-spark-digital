@@ -26,6 +26,7 @@ import { Route as WorkIdRouteImport } from './routes/work.$id'
 import { Route as AuthenticatedAccountPasswordRouteImport } from './routes/_authenticated/account.password'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBrandingRouteImport } from './routes/_authenticated/admin.branding'
+import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
 import { Route as AuthenticatedAdminFooterRouteImport } from './routes/_authenticated/admin.footer'
 import { Route as AuthenticatedAdminHeaderRouteImport } from './routes/_authenticated/admin.header'
 import { Route as AuthenticatedAdminHomeRouteImport } from './routes/_authenticated/admin.home'
@@ -127,6 +128,11 @@ const AuthenticatedAdminBrandingRoute =
     path: '/branding',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminFooterRoute =
   AuthenticatedAdminFooterRouteImport.update({
     id: '/footer',
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/products/': typeof ProductsIndexRoute
   '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/branding': typeof AuthenticatedAdminBrandingRoute
+  '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/footer': typeof AuthenticatedAdminFooterRoute
   '/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/admin/home': typeof AuthenticatedAdminHomeRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsIndexRoute
   '/account/password': typeof AuthenticatedAccountPasswordRoute
   '/admin/branding': typeof AuthenticatedAdminBrandingRoute
+  '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/footer': typeof AuthenticatedAdminFooterRoute
   '/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/admin/home': typeof AuthenticatedAdminHomeRoute
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/products/': typeof ProductsIndexRoute
   '/_authenticated/account/password': typeof AuthenticatedAccountPasswordRoute
   '/_authenticated/admin/branding': typeof AuthenticatedAdminBrandingRoute
+  '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
   '/_authenticated/admin/footer': typeof AuthenticatedAdminFooterRoute
   '/_authenticated/admin/header': typeof AuthenticatedAdminHeaderRoute
   '/_authenticated/admin/home': typeof AuthenticatedAdminHomeRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/products/'
     | '/account/password'
     | '/admin/branding'
+    | '/admin/email'
     | '/admin/footer'
     | '/admin/header'
     | '/admin/home'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/account/password'
     | '/admin/branding'
+    | '/admin/email'
     | '/admin/footer'
     | '/admin/header'
     | '/admin/home'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/products/'
     | '/_authenticated/account/password'
     | '/_authenticated/admin/branding'
+    | '/_authenticated/admin/email'
     | '/_authenticated/admin/footer'
     | '/_authenticated/admin/header'
     | '/_authenticated/admin/home'
@@ -541,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBrandingRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/email': {
+      id: '/_authenticated/admin/email'
+      path: '/email'
+      fullPath: '/admin/email'
+      preLoaderRoute: typeof AuthenticatedAdminEmailRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/footer': {
       id: '/_authenticated/admin/footer'
       path: '/footer'
@@ -644,6 +663,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBrandingRoute: typeof AuthenticatedAdminBrandingRoute
+  AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
   AuthenticatedAdminFooterRoute: typeof AuthenticatedAdminFooterRoute
   AuthenticatedAdminHeaderRoute: typeof AuthenticatedAdminHeaderRoute
   AuthenticatedAdminHomeRoute: typeof AuthenticatedAdminHomeRoute
@@ -660,6 +680,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBrandingRoute: AuthenticatedAdminBrandingRoute,
+  AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
   AuthenticatedAdminFooterRoute: AuthenticatedAdminFooterRoute,
   AuthenticatedAdminHeaderRoute: AuthenticatedAdminHeaderRoute,
   AuthenticatedAdminHomeRoute: AuthenticatedAdminHomeRoute,
