@@ -1,5 +1,18 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+
+import { lovable } from "@/integrations/lovable";
+import { checkTurnstile, getTurnstileConfig, protectedAuth } from "@/lib/auth-guard.functions";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+      reset: (id?: string) => void;
+    };
+  }
+}
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -35,6 +48,60 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [siteKey, setSiteKey] = useState("");
+  const [token, setToken] = useState("");
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | undefined>(undefined);
+  const getConfig = useServerFn(getTurnstileConfig);
+  const authFn = useServerFn(protectedAuth);
+  const checkFn = useServerFn(checkTurnstile);
+
+  useEffect(() => {
+    getConfig().then((c) => c.enabled && setSiteKey(c.siteKey)).catch(() => {});
+  }, [getConfig]);
+
+  useEffect(() => {
+    if (!siteKey || !widgetRef.current) return;
+    const render = () => {
+      if (!window.turnstile || !widgetRef.current || widgetId.current) return;
+      widgetId.current = window.turnstile.render(widgetRef.current, {
+        sitekey: siteKey,
+        callback: (t: string) => setToken(t),
+        "expired-callback": () => setToken(""),
+        "error-callback": () => setToken(""),
+      });
+    };
+    if (window.turnstile) return render();
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.onload = render;
+    document.head.appendChild(script);
+  }, [siteKey]);
+
+  function resetWidget() {
+    setToken("");
+    if (window.turnstile && widgetId.current) window.turnstile.reset(widgetId.current);
+  }
+
+  async function google() {
+    if (siteKey && !token) return toast.error("Please complete the security check first.");
+    setBusy(true);
+    try {
+      await checkFn({ data: { turnstileToken: token || undefined } });
+      const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth` });
+      if (res.error) throw res.error;
+      if (!res.redirected) {
+        await supabase.rpc("bootstrap_current_user");
+        navigate({ to: target });
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      resetWidget();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const target = search.redirect && search.redirect.startsWith("/") ? search.redirect : "/admin";
 
@@ -51,20 +118,22 @@ function AuthPage() {
       toast.error(parsed.error.issues[0]?.message ?? "Check your details");
       return;
     }
+    if (siteKey && !token) {
+      toast.error("Please complete the security check.");
+      return;
+    }
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: parsed.data.email,
-          password: parsed.data.password,
-          options: { emailRedirectTo: `${window.location.origin}/auth` },
-        });
-        if (error) throw error;
-        toast.success("Account created — check your email if confirmation is required.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
-        if (error) throw error;
-      }
+      const res = await authFn({
+        data: {
+          mode,
+          ...parsed.data,
+          redirectTo: `${window.location.origin}/auth`,
+          turnstileToken: token || undefined,
+        },
+      });
+      if (res.session) await supabase.auth.setSession(res.session);
+      else toast.success("Account created — check your email to confirm.");
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         await supabase.rpc("bootstrap_current_user");
@@ -72,6 +141,7 @@ function AuthPage() {
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not sign you in");
+      resetWidget();
     } finally {
       setBusy(false);
     }
@@ -114,12 +184,21 @@ function AuthPage() {
               placeholder="••••••••"
             />
           </label>
+          {siteKey && <div ref={widgetRef} className="mt-4 min-h-[65px]" />}
           <button
             type="submit"
             disabled={busy}
             className="mt-6 w-full rounded-lg bg-volt px-6 py-3.5 font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-carbon transition hover:brightness-95 disabled:opacity-60"
           >
             {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+          </button>
+          <button
+            type="button"
+            onClick={google}
+            disabled={busy}
+            className="mt-3 w-full rounded-lg border border-steel bg-white px-6 py-3.5 font-mono text-[12px] uppercase tracking-[0.15em] text-carbon transition hover:border-carbon disabled:opacity-60"
+          >
+            Continue with Google
           </button>
           <button
             type="button"
