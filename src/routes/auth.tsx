@@ -88,7 +88,10 @@ function AuthPage() {
   }
 
   async function google() {
-    if (siteKey && !token) return toast.error("Please complete the security check first.");
+    if (siteKey && !token) {
+      toast.error("Please complete the security check first.");
+      return;
+    }
     setBusy(true);
     try {
       await checkFn({ data: { turnstileToken: token || undefined } });
